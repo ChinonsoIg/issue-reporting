@@ -1,10 +1,10 @@
 import React, { Component } from "react";
-import { StyleSheet, Text, View, AppRegistry } from "react-native";
+import { StyleSheet, Text, View, AppRegistry, Platform } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import { Ionicons, Octicons } from 'react-native-vector-icons';
 
 import HomeScreen from "./components/HomeScreen";
 import IssuesList from "./components/IssuesList";
@@ -25,18 +25,44 @@ class App extends Component {
 
               if (route.name === 'Home') {
                 iconName = focused
-                  ? 'ios-information-circle'
-                  : 'ios-information-circle-outline';
+                ? Platform.OS === 'ios' 
+                  ? 'ios-home-sharp' 
+                  : 'md-home-sharp' 
+                : Platform.OS === 'ios'
+                    ? 'ios-home-outline'
+                    : 'md-home-outline'
+                ;
               } else if (route.name === 'Issues List') {
-                iconName = focused ? 'ios-list-circle' : 'list';
+                iconName = focused 
+                  ? Platform.OS === 'ios' 
+                      ? 'ios-list-circle' 
+                      : 'md-list-circle' 
+                  : Platform.OS === 'ios'
+                      ? 'ios-list'
+                      : 'md-list'
+                  ;
               } else if (route.name === 'Report Issue') {
-                iconName = focused ? 'ios-list-circle' : 'ios-list';
+                iconName = focused 
+                  ? Platform.OS === 'ios' 
+                      ? 'ios-add-circle' 
+                      : 'md-add-circle' 
+                  : Platform.OS === 'ios' 
+                      ? 'ios-add-circle-outline' 
+                      : 'md-add-circle-outline'
+                  ;
               } else if (route.name === 'You') {
-                iconName = focused ? 'ios-list-circle' : 'ios-list';
+                iconName = focused 
+                  ? Platform.OS === 'ios' 
+                      ? 'ios-person-circle' 
+                      : 'md-person-circle' 
+                  : Platform.OS === 'ios' 
+                      ? 'ios-person' 
+                      : 'md-person'
+                  ;
               }
 
               // You can return any component that you like here!
-              return <Ionicons name={iconName} size={size} color={color} />;
+              return <Ionicons name={iconName} size={size} color={color} />
             },
           })}
           tabBarOptions={{
