@@ -1,13 +1,15 @@
 import React, { Component } from "react";
 import { StyleSheet, Text, View, AppRegistry, Platform } from "react-native";
 import { StatusBar } from "expo-status-bar";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons, Octicons } from 'react-native-vector-icons';
+import { gray, btnPrimary, bgPrimary } from "./utils/colours";
 
 import HomeScreen from "./components/HomeScreen";
-import IssuesList from "./components/IssuesList";
+import Issues from "./components/Issues";
 import IssueReporting from "./components/IssueReporting";
 import You from "./components/You";
 
@@ -18,6 +20,7 @@ class App extends Component {
   render() {
     return (
       <NavigationContainer>
+        <SafeAreaProvider style={styles.container}>
         <Tab.Navigator
           screenOptions={({ route }) => ({
             tabBarIcon: ({ focused, color, size }) => {
@@ -32,7 +35,7 @@ class App extends Component {
                     ? 'ios-home-outline'
                     : 'md-home-outline'
                 ;
-              } else if (route.name === 'Issues List') {
+              } else if (route.name === 'Issues') {
                 iconName = focused 
                   ? Platform.OS === 'ios' 
                       ? 'ios-list-circle' 
@@ -66,16 +69,17 @@ class App extends Component {
             },
           })}
           tabBarOptions={{
-            activeTintColor: 'tomato',
-            inactiveTintColor: 'gray',
+            activeTintColor: btnPrimary,
+            inactiveTintColor: gray,
           }}
         >
           <Tab.Screen name="Home" component={HomeScreen} />
-          <Tab.Screen name="Issues List" component={IssuesList} />
+          <Tab.Screen name="Issues" component={Issues} />
           <Tab.Screen name="Report Issue" component={IssueReporting} />
           <Tab.Screen name="You" component={You} />
         </Tab.Navigator>
 
+      </SafeAreaProvider>
       </NavigationContainer>
     );
   }
@@ -84,16 +88,8 @@ class App extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center'
+    backgroundColor: bgPrimary,
   },
-  box: {
-    height: 50,
-    width: 50,
-    backgroundColor: '#e76e63',
-    margin: 10,
-  }
 })
 
 export default App;
