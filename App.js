@@ -5,12 +5,12 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Ionicons, Octicons } from 'react-native-vector-icons';
-import { gray, btnPrimary, bgPrimary } from "./utils/colours";
+import { Ionicons } from 'react-native-vector-icons';
+import { gray, btnPrimary, bgSecondary, purple } from "./utils/colours";
 
 import HomeScreen from "./components/HomeScreen";
 import Issues from "./components/Issues";
-import IssueReporting from "./components/IssueReporting";
+import ReportIssue from "./components/ReportIssue";
 import You from "./components/You";
 
 const Stack = createStackNavigator();
@@ -69,13 +69,13 @@ class App extends Component {
             },
           })}
           tabBarOptions={{
-            activeTintColor: btnPrimary,
+            activeTintColor: purple,
             inactiveTintColor: gray,
           }}
         >
           <Tab.Screen name="Home" component={HomeScreen} />
           <Tab.Screen name="Issues" component={Issues} />
-          <Tab.Screen name="Report Issue" component={IssueReporting} />
+          <Tab.Screen name="Report Issue" component={ReportIssue} />
           <Tab.Screen name="You" component={You} />
         </Tab.Navigator>
 
@@ -88,7 +88,7 @@ class App extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: bgPrimary,
+    backgroundColor: bgSecondary,
   },
 })
 

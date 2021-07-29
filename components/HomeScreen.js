@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, StyleSheet, Pressable, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons, Ionicons } from "react-native-vector-icons";
-import { bgPrimary, btnPrimary, white, black, goldenRod, gray } from "../utils/colours";
+import { purple, white, goldenRod, purple_95, purple_80, bgSecondary, darkerPurple, purple_70 } from "../utils/colours";
 
 const HomeScreen = () => {
   return (
@@ -21,17 +21,32 @@ const HomeScreen = () => {
         </Text>
         <View style={styles.reportsByYou}>
           <View style={styles.reportsStats}>
-            <Text>img</Text>
+            <View>
+              <MaterialCommunityIcons
+                name="check-circle"
+                color={purple_70}
+                size={24} />
+            </View>
             <Text>4</Text>
             <Text>Completed</Text>
           </View>
           <View style={styles.reportsStats}>
-            <Text>img</Text>
+            <View>
+              <MaterialCommunityIcons
+                name="circle-half-full"
+                color={purple_70}
+                size={24} />
+            </View>
             <Text>2</Text>
             <Text>In progress</Text>
           </View>
           <View style={styles.reportsStats}>
-            <Text>img</Text>
+            <View>
+              <MaterialCommunityIcons
+                name="checkbox-blank-circle-outline"
+                color={purple_70}
+                size={24} />
+            </View>
             <Text>4</Text>
             <Text>Not started</Text>
           </View>
@@ -49,7 +64,8 @@ const HomeScreen = () => {
           <View style={{flex: 1, flexDirection: 'row'}}>
             <MaterialCommunityIcons name="medal" size={22} color={goldenRod}
             style={{paddingRight: 10}} />
-            <Text>Your team has completed 1 issue</Text>
+            <Text>Your team has completed <Text style={styles.boldText}>4</Text> issue
+              </Text>
           </View>
           <View style={{flex: 1, flexDirection: 'row'}}>
             <Ionicons 
@@ -57,9 +73,9 @@ const HomeScreen = () => {
                 ? "ios-time-outline" 
                 : "md-time-outline"} 
               size={22} 
-              color={gray}
+              color={purple_80}
               style={{paddingRight: 10}} />
-            <Text>The average completion time was 0 days</Text>
+            <Text>The average completion time was <Text style={styles.boldText}>0</Text> days</Text>
           </View>
           <View style={{flex: 1, flexDirection: 'row'}}>
             <Ionicons 
@@ -67,9 +83,9 @@ const HomeScreen = () => {
                 ? "ios-file-tray" 
                 : "md-file-tray"} 
               size={22} 
-              color={black}
+              color={purple_80}
               style={{paddingRight: 10}} />
-            <Text>There have been 11 new issues reported</Text>
+            <Text>There have been <Text style={styles.boldText}>11</Text> new issues reported</Text>
           </View>
         </View>
       </View>
@@ -81,26 +97,27 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginHorizontal: 12,
-    backgroundColor: bgPrimary,
+    // backgroundColor: bgSecondary,
   },
   boxOne: {
     flex: 2,
     justifyContent: 'space-between',
-    backgroundColor: bgPrimary,
+    backgroundColor: bgSecondary,
   },
   boxTwo: {
     flex: 3,
     justifyContent: 'space-between',
     paddingTop: 20,
-    backgroundColor: bgPrimary,
+    backgroundColor: bgSecondary,
   },
   boxThree: {
     flex: 3,
     paddingTop: 10,
-    backgroundColor: bgPrimary,
+    backgroundColor: bgSecondary,
   },
   boldText: {
     fontWeight: 'bold',
+    color: darkerPurple,
   },
   btn: {
     alignItems: 'center',
@@ -110,7 +127,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     elevation: 3,
     borderRadius: 5,
-    backgroundColor: btnPrimary,
+    backgroundColor: purple,
   },
   btnText: {
     fontSize: 16,
@@ -127,16 +144,16 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     elevation: 3,
     borderRadius: 5,
-    borderColor: btnPrimary,
+    borderColor: purple,
     borderWidth: 5,
-    backgroundColor: white,
+    backgroundColor: purple_95,
   },
   btnTextOutline: {
     fontSize: 16,
     lineHeight: 21,
     fontWeight: 'bold',
     letterSpacing: 0.25,
-    color: btnPrimary,
+    color: purple,
   },
   reportsByYou: {
     flex: 4,

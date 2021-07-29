@@ -1,18 +1,24 @@
 import React from "react";
-import { View, Text, StyleSheet, Pressable, Platform } from "react-native";
+import { View, Text, StyleSheet, Pressable } from "react-native";
 import { Entypo } from "react-native-vector-icons";
-import { white, btnPrimary } from "../utils/colours";
+import { white, purple, darkPurple, purple_70 } from "../utils/colours";
 
 
 
-const IssuesList = ({ title }) => {
+const IssuesList = ({ issue, reportedBy, reportedFor, timestamp, attachments }) => {
 
   return (
     <View style={styles.item}>
       <View>
-        <Text style={styles.title}>{title}</Text>
-        <Text>Reported by: @John</Text>
-        <Text>18 Jun 2021, 11:05 PM</Text>
+        <Text style={styles.title}>{issue}</Text>
+        <View 
+          style={{flex: 1, 
+            flexDirection: "row", 
+            alignItems: "center"}}  >
+          <Text>Reported by: </Text>
+          <Text style={{color: purple_70}}>{reportedBy}</Text>
+        </View>
+        <Text>{timestamp}</Text>
       </View>
       <View 
         style={{flex:1, 
@@ -28,9 +34,15 @@ const IssuesList = ({ title }) => {
             flexDirection: 'row', 
             alignItems: 'center', 
             justifyContent: 'flex-end'}}>
-          <Entypo name="attachment" />
-          <Text style={{paddingHorizontal: 5}}>2</Text>
-          <Text style={styles.circle}>JNG</Text>
+          {attachments > 0 && <Entypo name="attachment" />}
+          {attachments > 0 && (
+            <Text style={{paddingHorizontal: 5}}>
+              {attachments}
+            </Text>
+          )}
+          <View style={styles.circle}>
+            <Text style={{color: white}}>{reportedFor}</Text>
+          </View>
         </View>
       </View>
     </View>
@@ -46,7 +58,8 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 16,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    color: darkPurple,
   },
   btn: {
     flex: 1,
@@ -56,7 +69,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     elevation: 3,
     borderRadius: 5,
-    backgroundColor: btnPrimary,
+    backgroundColor: purple,
   },
   btnText: {
     fontSize: 12,
@@ -66,14 +79,13 @@ const styles = StyleSheet.create({
     color: white,
   },
   circle: {
+    justifyContent: 'center',
+    alignItems: 'center',
     height: 40,
     width: 40,
     borderRadius: 40,
     fontSize: 13,
-    backgroundColor: btnPrimary,
-    color: white,
-    lineHeight: 31,
-    textAlign: 'center',
+    backgroundColor: purple,
   }
 })
 
