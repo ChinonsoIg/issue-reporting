@@ -1,5 +1,5 @@
 import React, {useState } from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity, Platform } from "react-native";
+import { View, Text, StyleSheet, Image, TouchableOpacity, Platform, Pressable } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "react-native-vector-icons";
@@ -8,7 +8,7 @@ import { bgSecondary, darkPurple, white, purple, purple_70, purple_80, purple_95
 import logo from "../assets/logo.png";
 import { color } from "react-native-elements/dist/helpers";
 
-const You = () => {
+const You = ({ navigation }) => {
   const [selectedImage, setSelectedImage] = useState(null)
   let openImagePickerAsync = async () => {
     let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -29,7 +29,7 @@ const You = () => {
   
   return (
     <SafeAreaView style={styles.container}>
-      <View style={{justifyContent: 'center', alignItems: 'center', marginVertical: 15}}>
+      <View style={{justifyContent: 'center', alignItems: 'center', marginVertical: 5}}>
         <Image source={logo} style={styles.profilePic} />
         <Text style={{fontWeight: 'bold', color: darkerPurple}}>John Doe</Text>
         <Text>Department: Electrical</Text>
@@ -54,8 +54,10 @@ const You = () => {
               size={18}
               color={purple_80}
               style={{paddingRight: 12}}
-            />           
-            <Text>Contact us</Text>
+            />
+            <Pressable onPress={() => navigation.navigate("Contact Us")}>
+              <Text>Contact us</Text>
+            </Pressable>
           </View>
           <View style={styles.helpItem}>
             <MaterialCommunityIcons
@@ -64,7 +66,9 @@ const You = () => {
               color={purple_80}
               style={{paddingRight: 12}}
             />
-            <Text>FAQ</Text>
+            <Pressable onPress={() => navigation.navigate("Faq")}>
+              <Text>Faq</Text>
+            </Pressable>
           </View>
           <View style={styles.helpItem}>
             <MaterialCommunityIcons
@@ -73,7 +77,9 @@ const You = () => {
               color={purple_80}
               style={{paddingRight: 12}}
             />
-            <Text>Terms &#38; conditions</Text>
+            <Pressable onPress={() => navigation.navigate("Terms and Conditions")}>
+              <Text>Terms &#38; conditions</Text>
+            </Pressable>
           </View>
         </View>
       </View>

@@ -75,7 +75,8 @@ const DATA = {
 }
 
 
-const Issues = () => {
+const Issues = ({ navigation }) => {
+
   const data = DATA.results
   const [query, setQuery] = useState("");
 
@@ -137,11 +138,12 @@ const Issues = () => {
           onChangeText={(e) => updateQuery(e)}
           value={query} 
         />
-      <SectionList
+      <SectionList        
         sections={result} 
         keyExtractor={(item, index) => item + index}
         renderItem={({ item, index }) => 
           <IssuesList 
+            navigation={navigation}
             key={index}
             title={item.title}
             issue={item.issue}

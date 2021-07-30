@@ -1,13 +1,17 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { purple, white, goldenRod, purple_95, purple_80, bgSecondary, darkerPurple, purple_70 } from "../utils/colours";
 
 
-const ForgotPassword = () => {
+
+const Register = () => {
   return (
-    <View>
-      <Text>Forgot Password</Text>
-    </View>
+    <SafeAreaView style={styles.container}>
+      <View>
+        <Text>Register</Text>
+      </View>
+    </SafeAreaView>
   )
 }
 
@@ -40,4 +44,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default ForgotPassword;
+export default Register;

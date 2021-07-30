@@ -4,13 +4,15 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons, Ionicons } from "react-native-vector-icons";
 import { purple, white, goldenRod, purple_95, purple_80, bgSecondary, darkerPurple, purple_70 } from "../utils/colours";
 
-const HomeScreen = () => {
+const HomeScreen = ({ navigation }) => {
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.boxOne}>
         <Text style={[styles.boldText, {fontSize: 18}]}>Good evening</Text>
         <Text>Glad to have you here, we are ready to help you report an issue.</Text>
-        <Pressable style={styles.btn}>
+        <Pressable style={styles.btn}
+          onPress={() => navigation.navigate("Report an Issue")} >
           <Text style={styles.btnText}>Report an issue</Text>
         </Pressable>
       </View>
@@ -51,7 +53,9 @@ const HomeScreen = () => {
             <Text>Not started</Text>
           </View>
         </View>
-        <Pressable style={styles.btnOutline}>
+        <Pressable
+          style={styles.btnOutline}
+          onPress={() => navigation.navigate("Issues")} >
           <Text style={styles.btnTextOutline}>View issues</Text>
         </Pressable>
       </View>
@@ -85,7 +89,9 @@ const HomeScreen = () => {
               size={22} 
               color={purple_80}
               style={{paddingRight: 10}} />
-            <Text>There have been <Text style={styles.boldText}>11</Text> new issues reported</Text>
+            <Text>
+              There have been <Text style={styles.boldText}>11</Text> new issues reported.
+            </Text>
           </View>
         </View>
       </View>
@@ -102,6 +108,7 @@ const styles = StyleSheet.create({
   boxOne: {
     flex: 2,
     justifyContent: 'space-between',
+    marginTop: 15,
     backgroundColor: bgSecondary,
   },
   boxTwo: {

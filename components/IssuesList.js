@@ -4,8 +4,7 @@ import { Entypo } from "react-native-vector-icons";
 import { white, purple, darkPurple, purple_70 } from "../utils/colours";
 
 
-
-const IssuesList = ({ issue, reportedBy, reportedFor, timestamp, attachments }) => {
+const IssuesList = ({ issue, reportedBy, reportedFor, timestamp, attachments, navigation}) => {
 
   return (
     <View style={styles.item}>
@@ -26,7 +25,8 @@ const IssuesList = ({ issue, reportedBy, reportedFor, timestamp, attachments }) 
           flexDirection: 'row', 
           justifyContent: 'space-between', 
           alignItems: 'center'}} >
-        <Pressable style={styles.btn}>
+        <Pressable style={styles.btn}
+          onPress={() => navigation.navigate("Task")} >
           <Text style={styles.btnText}>View in Tasks</Text>
         </Pressable>
         <View 

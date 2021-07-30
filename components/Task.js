@@ -1,19 +1,14 @@
 import React from "react";
-import { View, Text, StyleSheet, Pressable } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { purple, white, goldenRod, purple_95, purple_80, bgSecondary, darkerPurple, purple_70 } from "../utils/colours";
 
 
-
-const ReportIssueSuccess = ({ navigation }) => {
+const Task = () => {
   return (
     <SafeAreaView style={styles.container}>
-      <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-        <Text>Issue reported successfully</Text>
-        <Pressable style={styles.btnOutline}
-          onPress={() => navigation.navigate("Home")} >
-          <Text style={styles.btnTextOutline}>Go home</Text>
-        </Pressable>
+      <View>
+        <Text>Task</Text>
       </View>
     </SafeAreaView>
   )
@@ -50,8 +45,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 12,
-    paddingHorizontal: 15,
-    width: '50%',
+    paddingHorizontal: 32,
     borderRadius: 4,
     elevation: 3,
     borderRadius: 5,
@@ -68,4 +62,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default ReportIssueSuccess;
+export default Task;

@@ -13,7 +13,7 @@ import { depts, loc } from "../utils/api";
 import SelectDropdown from "react-native-select-dropdown";
 
 
-const ReportIssue = () => {
+const ReportIssue = ({ navigation }) => {
   // For issue title
   const [text, onChangeText] = useState("");
   
@@ -204,7 +204,7 @@ const ReportIssue = () => {
                       color={purple_70}
                       size={16}
                     />
-                    <Text style={[styles.btnTextOutline, {paddingLeft: 10}]}>Pick a photo</Text>
+                    <Text style={[styles.btnTextOutline]}>Pick a photo</Text>
                   </TouchableOpacity>
                   <TouchableOpacity onPress={__startCamera} style={styles.btnOutline}>
                   <Ionicons 
@@ -215,14 +215,17 @@ const ReportIssue = () => {
                     color={purple_70}
                     size={16}
                   />
-                  <Text style={[styles.btnTextOutline, {paddingLeft: 10}]}>Take picture</Text>
+                  <Text style={[styles.btnTextOutline]}>Take picture</Text>
                 </TouchableOpacity>
                 </View>
               </View>
               
               <View style={{marginVertical: 8, flex: 1, justifySelf: 'flex-start'}}>
                 <TouchableOpacity
-                  onPress={() => alert('Hello, world!')}
+                  onPress={() => {
+                    alert('Hello, world!');
+                    navigation.navigate("ReportIssueSuccess");
+                  }}
                   style={styles.btn}>
                   <Text style={styles.btnText}>Submit</Text>
                 </TouchableOpacity>
