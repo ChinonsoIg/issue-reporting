@@ -1,14 +1,25 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { purple, white, goldenRod, purple_95, purple_80, bgSecondary, darkerPurple, purple_70 } from "../utils/colours";
+import { purple, white, goldenRod, purple_95, purple_80, bgSecondary, darkerPurple, purple_70 } from "../../utils/colours";
 
 
-const Task = () => {
+const SignUp = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View>
-        <Text>Task</Text>
+        <Text>Welcome Back!</Text>
+        <Text>Sign in to continue</Text>
+        <View>
+          <Text>hhj</Text>
+        </View>
+        <View>
+
+        </View>
+        <View>
+          <Text>Remember me</Text>
+          <Text>Forgot password?</Text>
+        </View>
       </View>
     </SafeAreaView>
   )
@@ -61,4 +72,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default Task;
+export default SignUp;

@@ -1,8 +1,6 @@
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 
-import SignIn from "../SignIn";
-import Register from "../Register";
 import ReportIssue from "../ReportIssue";
 import Issues from "../Issues";
 import Task from "../Task";

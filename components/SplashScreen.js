@@ -4,12 +4,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { purple, white, goldenRod, purple_95, purple_80, bgSecondary, darkerPurple, purple_70 } from "../utils/colours";
 
 
-
-const SignIn = () => {
+const SplashScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
-      <View>
-        <Text>Sign in</Text>
+      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+        <Text style={styles.boldText}>Splash screen</Text>
       </View>
     </SafeAreaView>
   )
@@ -18,30 +17,12 @@ const SignIn = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginHorizontal: 12,
-    // backgroundColor: bgSecondary,
+    marginHorizontal: 12
   },
   boldText: {
     fontWeight: 'bold',
     color: darkerPurple,
-  },
-  btn: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 32,
-    borderRadius: 4,
-    elevation: 3,
-    borderRadius: 5,
-    backgroundColor: purple,
-  },
-  btnText: {
-    fontSize: 16,
-    lineHeight: 21,
-    fontWeight: 'bold',
-    letterSpacing: 0.25,
-    color: white,
-  },
+  }
 })
 
-export default SignIn;
+export default SplashScreen;

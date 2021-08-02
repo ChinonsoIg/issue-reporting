@@ -6,11 +6,12 @@ import { Ionicons } from 'react-native-vector-icons';
 import { purple, gray } from "../../utils/colours";
 
 import { HomeStackNavigator, IssuesStackNavigator, NotificationsStackNavigator, YouStackNavigator } from "./StackNavigator";
-
+import { SignInStackNavigator, SignUpStackNavigator } from "./AuthNavigator";
 
 const Tab = createBottomTabNavigator();
 
-const TabNavigator = () => {
+const TabNavigator = (userToken) => {
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -53,7 +54,25 @@ const TabNavigator = () => {
                   ? 'ios-person' 
                   : 'md-person'
               ;
-          }
+          } else if (route.name === 'Sign In') {
+            iconName = focused 
+              ? Platform.OS === 'ios'
+                  ? 'ios-log-in'
+                  : 'md-log-in'
+              : Platform.OS === 'ios'
+                  ? 'ios-log-in-outline'
+                  : 'md-log-in-outline'
+              ;
+          } else if (route.name === 'Sign Up') {
+            iconName = focused 
+              ? Platform.OS === 'ios'
+                  ? 'ios-log-out'
+                  : 'md-log-out'
+              : Platform.OS === 'ios'
+                  ? 'ios-log-out-outline'
+                  : 'md-log-out-outline'
+              ;
+            }
 
           // You can return any component that you like here!
           return <Ionicons name={iconName} size={size} color={color} />
@@ -69,7 +88,6 @@ const TabNavigator = () => {
       <Tab.Screen name="Notifications" component={NotificationsStackNavigator} />
       <Tab.Screen name="You" component={YouStackNavigator} />
     </Tab.Navigator>
-
   );
 }
 
