@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, StyleSheet, Pressable, TouchableHighlight, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { purple, white, goldenRod, purple_95, purple_80, bgSecondary, darkerPurple, purple_70, darkPurple } from "../../utils/colours";
-import logo from "../../image/processing_thoughts.png";
+import { purple, white, purple_95, purple_80, darkPurple, purple_40 } from "../../utils/colours";
+import landingImage from "../../image/work_together.png";
 
 
-const SignIn = () => {
+const SignIn = ({ navigation }) => {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = React.useState("");
+  const [password, setPassword] = useState("");
 
   const onSubmit = () => {
     console.log(email, password)
@@ -15,42 +15,62 @@ const SignIn = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View 
-        style={{
-          flex: 1, 
-          alignItems: 'center', 
-          justifyContent: 'center'
-        }}
-      >
-        <Image source={logo} style={styles.profilePic} />
-        <Text style={[styles.boldText, {alignSelf: 'flex-start'}]}>Welcome Back!</Text>
-        <Text style={{alignSelf: 'flex-start'}}>Sign in to continue</Text>
-        <TextInput 
-          style={styles.input} 
-          onChangeText={(e) => setEmail(e)}
-          value={email}
-          placeholder="E-mail"
-        />
-        <TextInput 
-          style={styles.input}
-          onChangeText={(e) => setPassword(e)}
-          value={password}
-          placeholder="Password"
-        />
-        <View 
-          // style={{
-          //   flex: 1,
-          //   flexDirection: 'row', 
-          //   alignItems: 'space-between', 
-          //   justifyContent: 'space-between'
-          // }}
+      <View style={{ flex: 1 }} >
+        <View
+          style={{
+            flex: 1, 
+            alignItems: 'center', 
+            justifyContent: 'center'
+          }}
         >
-          <Text>Remember me</Text>
-          <Text>Forgot password?</Text>
+          <Image source={landingImage} style={styles.img} />
         </View>
-        <TouchableHighlight style={styles.btn} onPress={onSubmit}>
-          <Text style={styles.btnText}>Submit</Text>
-        </TouchableHighlight>
+        
+        <View
+          style={{
+            flex: 2, 
+            justifyContent: 'space-around',
+          }}
+        >
+          <View>
+            <Text style={[styles.boldText, {alignSelf: 'flex-start'}]}>Welcome back!</Text>
+            <Text style={{alignSelf: 'flex-start'}}>Sign in to continue</Text>
+          </View>
+        
+          <View>
+            <TextInput 
+              style={styles.input} 
+              onChangeText={(e) => setEmail(e)}
+              value={email}
+              placeholder="E-mail"
+            />
+            <TextInput 
+              style={styles.input}
+              onChangeText={(e) => setPassword(e)}
+              value={password}
+              placeholder="Password"
+            />
+            <View 
+              style={{
+                width: '100%',
+                flexDirection: 'row',  
+                justifyContent: 'flex-end',
+              }}
+            >
+              <Text 
+                style={{ marginHorizontal: 10, 
+                  color:purple_40 
+                }}
+                onPress={() => navigation.navigate("Reset Password")}
+              >
+                Forgot password?
+              </Text>
+            </View>
+          </View>
+          <TouchableHighlight style={styles.btn} onPress={onSubmit} underlayColor={purple_80} >
+            <Text style={styles.btnText}>Submit</Text>
+          </TouchableHighlight>
+        </View>
       </View>
     </SafeAreaView>
   )
@@ -62,15 +82,23 @@ const styles = StyleSheet.create({
     marginHorizontal: 12
   },
   input: {
-    height: 40,
-    margin: 12,
+    height: 50,
+    marginVertical: 15,
+    padding: 5,
     borderWidth: 1,
+    borderColor: purple_80,
     borderRadius: 5,
-    padding: 10,
+    backgroundColor: white,
   },
   boldText: {
     fontWeight: 'bold',
+    fontSize: 20,
     color: darkPurple,
+  },
+  img: {
+    width: '100%',
+    height: 200,
+    resizeMode: 'contain',
   },
   btn: {
     alignItems: 'center',
