@@ -8,6 +8,8 @@ import { bgSecondary, darkPurple, white, purple, purple_70, purple_80, purple_95
 import logo from "../assets/logo.png";
 import { color } from "react-native-elements/dist/helpers";
 
+import firebase from "firebase";
+
 const You = ({ navigation }) => {
   const [selectedImage, setSelectedImage] = useState(null)
   let openImagePickerAsync = async () => {
@@ -25,6 +27,13 @@ const You = ({ navigation }) => {
     }
 
     setSelectedImage({ localUri: pickerResult.uri });
+  }
+  
+  const onSignOut = () => {
+    firebase.auth().signOut()
+      .then(() => {
+        console.log('User signed out')
+      })
   }
   
   return (
@@ -90,7 +99,7 @@ const You = ({ navigation }) => {
           color={red}
           style={{paddingRight: 12}}
         />
-        <Text style={[styles.boldText, {color: red}]}>
+        <Text style={[styles.boldText, {color: red}]} onPress={onSignOut}>
           Sign Out
         </Text>
       </View>

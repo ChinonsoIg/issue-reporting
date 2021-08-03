@@ -6,22 +6,35 @@ import { purple, white, purple_95, purple_80, darkPurple, purple_40, black } fro
 import landingImage from "../../image/work_together.png";
 import { depts, loc } from "../../utils/api";
 
+import firebase from "firebase";
 
 const SignIn = () => {
-  const [firstname, setFirstname] = useState("");
-  const [lastname, setLastname] = useState("");
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  // const [department, setDepartment] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
   // To select department
   const [deptOpen, setDeptOpen] = useState(false);
-  const [deptValue, setDeptValue] = useState(null);
-  const [department, setDepartment] = useState(depts);
+  const [department, setDepartment] = useState(null);
+  const [dept, setDept] = useState(depts);
 
-  const onSubmit = () => {
-    console.log(email, password)
+  const onSignUp = () => {
+    firebase.auth().createUserWithEmailAndPassword(email, password)
+      .then((result) => {
+        firebase.firestore().collection("users")
+          .doc(firebase.auth().currentUser.uid)
+          .set({
+            name,
+            email,
+            password,
+            department
+          })
+        console.log(result)
+      })
+      .then((error) => {
+        console.log(error)
+      })
   }
 
   return (
@@ -47,15 +60,9 @@ const SignIn = () => {
           <View>
             <TextInput 
               style={styles.input} 
-              onChangeText={(e) => setFirstname(e)}
-              value={firstname}
-              placeholder="Firstname"
-            />
-            <TextInput 
-              style={styles.input} 
-              onChangeText={(e) => setLastname(e)}
-              value={lastname}
-              placeholder="Lastname"
+              onChangeText={(e) => setName(e)}
+              value={name}
+              placeholder="Full name"
             />
             <TextInput 
               style={styles.input} 
@@ -103,8 +110,8 @@ const SignIn = () => {
               </Text>
             </View>
           </View>
-          <TouchableHighlight style={styles.btn} onPress={onSubmit} underlayColor={purple_80} >
-            <Text style={styles.btnText}>Submit</Text>
+          <TouchableHighlight style={styles.btn} onPress={onSignUp} underlayColor={purple_80} >
+            <Text style={styles.btnText}>Sign Up</Text>
           </TouchableHighlight>
         </View>
       </View>

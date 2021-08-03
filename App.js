@@ -1,4 +1,16 @@
-import React, { Component, useState } from "react";
+import React, { Component, useState, useEffect } from "react";
+
+import firebase from "firebase/app";
+
+const firebaseConfig = {
+  
+};
+
+// This checks that no other instance of firebase is running
+if (firebase.apps.length === 0) {
+  firebase.initializeApp(firebaseConfig)
+}
+
 import { StyleSheet } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -9,8 +21,30 @@ import AuthNavigator from "./components/navigation/AuthNavigator";
 import SplashScreen from "./components/SplashScreen";
 
 const App = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [userToken, setUserToken] = useState(null);
+
+
+  let five
+  let two = 'gb';
+  let three = 'nm';
+  five = two + three;
+
+  console.log(five)
+  const [isLoading, setIsLoading] = useState(true);
+  const [loggedIn, setLoggedIn] = useState(false);
+
+  useEffect(() => {
+    firebase.auth().onAuthStateChanged((user) => {
+      if(!user) {
+        setIsLoading(false)
+        setLoggedIn(false)        
+      } else {
+        setIsLoading(false)
+        setLoggedIn(true)
+      }
+    })
+
+  }, [])
+
 
   if (isLoading) {
     return (
@@ -24,12 +58,12 @@ const App = () => {
     <NavigationContainer>
       <SafeAreaProvider style={styles.container}>
         {
-          userToken === null
+          loggedIn
             ? (
-              <AuthNavigator />
+              <TabNavigator/>
             )
             : (
-              <TabNavigator/>
+              <AuthNavigator />
             )            
         }
       </SafeAreaProvider>

@@ -4,13 +4,20 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { purple, white, purple_95, purple_80, darkPurple, purple_40 } from "../../utils/colours";
 import landingImage from "../../image/work_together.png";
 
+import firebase from "firebase";
 
 const SignIn = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const onSubmit = () => {
-    console.log(email, password)
+  const onSignIn = () => {
+    firebase.auth().signInWithEmailAndPassword(email, password)
+      .then((result) => {
+        console.log(result)
+      })
+      .then((error) => {
+        console.log(error)
+      })
   }
 
   return (
@@ -67,8 +74,8 @@ const SignIn = ({ navigation }) => {
               </Text>
             </View>
           </View>
-          <TouchableHighlight style={styles.btn} onPress={onSubmit} underlayColor={purple_80} >
-            <Text style={styles.btnText}>Submit</Text>
+          <TouchableHighlight style={styles.btn} onPress={onSignIn} underlayColor={purple_80} >
+            <Text style={styles.btnText}>Sign In</Text>
           </TouchableHighlight>
         </View>
       </View>

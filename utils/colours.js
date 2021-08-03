@@ -12,6 +12,8 @@ export const purple_40 = "#cc00cc";
 export const purple = "#800080";
 export const darkPurple = "#4d004d";
 export const darkerPurple = "#1a001a";
+export const yellow = "#ffff00";
+export const green = "#008000";
 
 export const bgSecondary = "rgba(255, 230, 255, 0.3)";
 export const bgPrimary = "rgba(255, 230, 255)"
