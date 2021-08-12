@@ -1,0 +1,18 @@
+{
+  "completed": [
+    { 
+      "issue": "Printer not printing", 
+      "reportedBy": "Charles McFish", 
+      "reportedFor": "OFF",
+      "attachments": 3,
+      "timestamp": "24 Jun 2021, 01:14 PM" 
+    },
+    { 
+      "issue": "Generator smoking", 
+      "reportedBy": "Toni Daniels", 
+      "reportedFor": "GEN",
+      "attachments": 0,
+      "timestamp": "29 Jun 2021, 04:04 PM" 
+    }
+  ]
+}

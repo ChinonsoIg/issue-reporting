@@ -32,11 +32,6 @@ const SignInStackNavigator = () => {
         }}
       />
       <Stack.Screen 
-        name="Sign Up"
-        component={SignUp}
-        options={{headerTitleAlign: "center"}}
-      />
-      <Stack.Screen 
         name="Reset Password"
         component={ResetPassword}
         options={{headerTitleAlign: "center"}}

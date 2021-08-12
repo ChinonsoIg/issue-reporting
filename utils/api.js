@@ -1,4 +1,4 @@
-export const depts = [
+export const dept = [
   {label: 'None', value: 'none'},
   {label: 'Electrical', value: 'electrical'},
   {label: 'Automobile', value: 'automobile'}

@@ -1,109 +1,134 @@
-import React from "react";
+import React, { Component, useEffect } from "react";
 import { View, Text, StyleSheet, Pressable, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons, Ionicons } from "react-native-vector-icons";
 import { purple, white, goldenRod, purple_95, purple_80, bgSecondary, darkerPurple, purple_70 } from "../utils/colours";
 
-const HomeScreen = ({ navigation }) => {
+// For redux
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import { fetchUser, fetchIsInProgress, fetchIsCompleted } from "../redux/actions/index";
 
-  return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.boxOne}>
-        <Text style={[styles.boldText, {fontSize: 18}]}>Good evening</Text>
-        <Text>Glad to have you here, we are ready to help you report an issue.</Text>
-        <Pressable style={styles.btn}
-          onPress={() => navigation.navigate("Report an Issue")} >
-          <Text style={styles.btnText}>Report an issue</Text>
-        </Pressable>
-      </View>
-      <View style={styles.boxTwo}>
-        <Text 
-          style={[styles.boldText, {flex: 1}]}>
-            Issues reported by you
-        </Text>
-        <View style={styles.reportsByYou}>
-          <View style={styles.reportsStats}>
-            <View>
-              <MaterialCommunityIcons
-                name="check-circle"
-                color={purple_70}
-                size={24} />
-            </View>
-            <Text>4</Text>
-            <Text>Completed</Text>
-          </View>
-          <View style={styles.reportsStats}>
-            <View>
-              <MaterialCommunityIcons
-                name="circle-half-full"
-                color={purple_70}
-                size={24} />
-            </View>
-            <Text>2</Text>
-            <Text>In progress</Text>
-          </View>
-          <View style={styles.reportsStats}>
-            <View>
-              <MaterialCommunityIcons
-                name="checkbox-blank-circle-outline"
-                color={purple_70}
-                size={24} />
-            </View>
-            <Text>4</Text>
-            <Text>Not started</Text>
-          </View>
+
+
+class HomeScreen extends Component {
+  componentDidMount() {
+    this.props.fetchUser();
+    this.props.fetchIsInProgress();
+    this.props.fetchIsCompleted();
+  }
+  
+  render() {
+
+    const { currentUser } = this.props;
+
+    if (!currentUser || (currentUser == undefined)) {
+      return (
+        <View></View>
+      )
+    }
+
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.boxOne}>
+          <Text style={[styles.boldText, {fontSize: 18}]}>Good evening {currentUser.name} </Text>
+          <Text>Glad to have you here, we are ready to help you report an issue.</Text>
+          <Pressable style={styles.btn}
+            onPress={() => this.props.navigation.navigate("Report an Issue")} >
+            <Text style={styles.btnText}>Report an issue</Text>
+          </Pressable>
         </View>
-        <Pressable
-          style={styles.btnOutline}
-          onPress={() => navigation.navigate("Issues")} >
-          <Text style={styles.btnTextOutline}>View issues</Text>
-        </Pressable>
-      </View>
-      <View style={styles.boxThree}>
-        <Text 
-          style={[styles.boldText, {flex: 1}, {justifyContent: 'flex-end'}, {paddingTop: 10}]}>
-            Last 7 days
-        </Text>
-        <View style={styles.lastSevenDays}>
-          <View style={{flex: 1, flexDirection: 'row'}}>
-            <MaterialCommunityIcons name="medal" size={22} color={goldenRod}
-            style={{paddingRight: 10}} />
-            <Text>Your team has completed <Text style={styles.boldText}>4</Text> issue
+        <View style={styles.boxTwo}>
+          <Text 
+            style={[styles.boldText, {flex: 1}]}>
+              Issues reported by you
+          </Text>
+          <View style={styles.reportsByYou}>
+            <View style={styles.reportsStats}>
+              <View>
+                <MaterialCommunityIcons
+                  name="check-circle"
+                  color={purple_70}
+                  size={24} />
+              </View>
+              <Text>4</Text>
+              <Text>Completed</Text>
+            </View>
+            <View style={styles.reportsStats}>
+              <View>
+                <MaterialCommunityIcons
+                  name="circle-half-full"
+                  color={purple_70}
+                  size={24} />
+              </View>
+              <Text>2</Text>
+              <Text>In progress</Text>
+            </View>
+            <View style={styles.reportsStats}>
+              <View>
+                <MaterialCommunityIcons
+                  name="checkbox-blank-circle-outline"
+                  color={purple_70}
+                  size={24} />
+              </View>
+              <Text>4</Text>
+              <Text>Not started</Text>
+            </View>
+          </View>
+          <Pressable
+            style={styles.btnOutline}
+            onPress={() => this.props.navigation.navigate("Issues")} >
+            <Text style={styles.btnTextOutline}>View issues</Text>
+          </Pressable>
+        </View>
+        <View style={styles.boxThree}>
+          <Text 
+            style={[styles.boldText, {flex: 1}, {justifyContent: 'flex-end'}, {paddingTop: 10}]}>
+              Last 7 days
+          </Text>
+          <View style={styles.lastSevenDays}>
+            <View style={{flex: 1, flexDirection: 'row'}}>
+              <MaterialCommunityIcons name="medal" size={22} color={goldenRod}
+              style={{paddingRight: 10}} />
+              <Text>Your team has completed <Text style={styles.boldText}>4</Text> issue
+                </Text>
+            </View>
+            <View style={{flex: 1, flexDirection: 'row'}}>
+              <Ionicons 
+                name={Platform.OS === "ios" 
+                  ? "ios-time-outline" 
+                  : "md-time-outline"} 
+                size={22} 
+                color={purple_80}
+                style={{paddingRight: 10}} />
+              <Text>The average completion time was <Text style={styles.boldText}>0</Text> days</Text>
+            </View>
+            <View style={{flex: 1, flexDirection: 'row'}}>
+              <Ionicons 
+                name={Platform.OS === "ios" 
+                  ? "ios-file-tray" 
+                  : "md-file-tray"} 
+                size={22} 
+                color={purple_80}
+                style={{paddingRight: 10}} />
+              <Text>
+                There have been <Text style={styles.boldText}>11</Text> new issues reported.
               </Text>
-          </View>
-          <View style={{flex: 1, flexDirection: 'row'}}>
-            <Ionicons 
-              name={Platform.OS === "ios" 
-                ? "ios-time-outline" 
-                : "md-time-outline"} 
-              size={22} 
-              color={purple_80}
-              style={{paddingRight: 10}} />
-            <Text>The average completion time was <Text style={styles.boldText}>0</Text> days</Text>
-          </View>
-          <View style={{flex: 1, flexDirection: 'row'}}>
-            <Ionicons 
-              name={Platform.OS === "ios" 
-                ? "ios-file-tray" 
-                : "md-file-tray"} 
-              size={22} 
-              color={purple_80}
-              style={{paddingRight: 10}} />
-            <Text>
-              There have been <Text style={styles.boldText}>11</Text> new issues reported.
-            </Text>
+            </View>
           </View>
         </View>
-      </View>
-    </SafeAreaView>
-  )
+      </SafeAreaView>
+    )
+  }
 }
+
+
+
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginHorizontal: 12,
-    // backgroundColor: bgSecondary,
   },
   boxOne: {
     flex: 2,
@@ -187,4 +212,113 @@ const styles = StyleSheet.create({
   }
 })
 
-export default HomeScreen;
+
+const mapStateToProps = (store) => ({
+  currentUser: store.userState.currentUser,
+  isInProgress: store.userState.isInProgress,
+  isCompleted: store.userState.isCompleted
+});
+
+const mapDispatchToProps = (dispatch) => bindActionCreators({ fetchUser, fetchIsInProgress, fetchIsCompleted }, dispatch);
+
+export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen);
+
+
+
+// const HomeScreen = ({ navigation }, props) => {
+//   console.log('Props: ', props)
+  
+
+//   return (
+//     <SafeAreaView style={styles.container}>
+//       <View style={styles.boxOne}>
+//         <Text style={[styles.boldText, {fontSize: 18}]}>Good evening</Text>
+//         <Text>Glad to have you here, we are ready to help you report an issue.</Text>
+//         <Pressable style={styles.btn}
+//           onPress={() => navigation.navigate("Report an Issue")} >
+//           <Text style={styles.btnText}>Report an issue</Text>
+//         </Pressable>
+//       </View>
+//       <View style={styles.boxTwo}>
+//         <Text 
+//           style={[styles.boldText, {flex: 1}]}>
+//             Issues reported by you
+//         </Text>
+//         <View style={styles.reportsByYou}>
+//           <View style={styles.reportsStats}>
+//             <View>
+//               <MaterialCommunityIcons
+//                 name="check-circle"
+//                 color={purple_70}
+//                 size={24} />
+//             </View>
+//             <Text>4</Text>
+//             <Text>Completed</Text>
+//           </View>
+//           <View style={styles.reportsStats}>
+//             <View>
+//               <MaterialCommunityIcons
+//                 name="circle-half-full"
+//                 color={purple_70}
+//                 size={24} />
+//             </View>
+//             <Text>2</Text>
+//             <Text>In progress</Text>
+//           </View>
+//           <View style={styles.reportsStats}>
+//             <View>
+//               <MaterialCommunityIcons
+//                 name="checkbox-blank-circle-outline"
+//                 color={purple_70}
+//                 size={24} />
+//             </View>
+//             <Text>4</Text>
+//             <Text>Not started</Text>
+//           </View>
+//         </View>
+//         <Pressable
+//           style={styles.btnOutline}
+//           onPress={() => navigation.navigate("Issues")} >
+//           <Text style={styles.btnTextOutline}>View issues</Text>
+//         </Pressable>
+//       </View>
+//       <View style={styles.boxThree}>
+//         <Text 
+//           style={[styles.boldText, {flex: 1}, {justifyContent: 'flex-end'}, {paddingTop: 10}]}>
+//             Last 7 days
+//         </Text>
+//         <View style={styles.lastSevenDays}>
+//           <View style={{flex: 1, flexDirection: 'row'}}>
+//             <MaterialCommunityIcons name="medal" size={22} color={goldenRod}
+//             style={{paddingRight: 10}} />
+//             <Text>Your team has completed <Text style={styles.boldText}>4</Text> issue
+//               </Text>
+//           </View>
+//           <View style={{flex: 1, flexDirection: 'row'}}>
+//             <Ionicons 
+//               name={Platform.OS === "ios" 
+//                 ? "ios-time-outline" 
+//                 : "md-time-outline"} 
+//               size={22} 
+//               color={purple_80}
+//               style={{paddingRight: 10}} />
+//             <Text>The average completion time was <Text style={styles.boldText}>0</Text> days</Text>
+//           </View>
+//           <View style={{flex: 1, flexDirection: 'row'}}>
+//             <Ionicons 
+//               name={Platform.OS === "ios" 
+//                 ? "ios-file-tray" 
+//                 : "md-file-tray"} 
+//               size={22} 
+//               color={purple_80}
+//               style={{paddingRight: 10}} />
+//             <Text>
+//               There have been <Text style={styles.boldText}>11</Text> new issues reported.
+//             </Text>
+//           </View>
+//         </View>
+//       </View>
+//     </SafeAreaView>
+//   )
+// }
+

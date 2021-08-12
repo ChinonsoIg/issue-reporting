@@ -6,11 +6,11 @@ import { Ionicons } from 'react-native-vector-icons';
 import { purple, gray } from "../../utils/colours";
 
 import { HomeStackNavigator, IssuesStackNavigator, NotificationsStackNavigator, YouStackNavigator } from "./StackNavigator";
-import { SignInStackNavigator, SignUpStackNavigator } from "./AuthNavigator";
 
 const Tab = createBottomTabNavigator();
 
-const TabNavigator = (userToken) => {
+
+const TabNavigator = () => {
 
   return (
     <Tab.Navigator

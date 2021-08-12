@@ -4,12 +4,12 @@ import { Entypo } from "react-native-vector-icons";
 import { white, purple, darkPurple, purple_70 } from "../utils/colours";
 
 
-const IssuesList = ({ issue, reportedBy, reportedFor, timestamp, attachments, navigation}) => {
+const IssuesList = ({ title, reportedBy, reportedFor, timestamp, attachments, navigation}) => {
 
   return (
     <View style={styles.item}>
       <View>
-        <Text style={styles.title}>{issue}</Text>
+        <Text style={styles.title}>{title}</Text>
         <View 
           style={{flex: 1, 
             flexDirection: "row", 

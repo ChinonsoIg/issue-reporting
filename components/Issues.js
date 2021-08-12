@@ -1,83 +1,32 @@
 import React, { useState } from "react";
-import { Text, StyleSheet, SectionList } from "react-native";
+import { Text, View, StyleSheet, SectionList } from "react-native";
 import { SearchBar } from "react-native-elements";
 import { SafeAreaView } from "react-native-safe-area-context";
 import IssuesList from "./IssuesList";
 import { bgSecondary, darkerPurple } from "../utils/colours";
-
-const DATA = {
-  "results":[
-    {
-      "title": "Not Started",
-      "data": [
-        { 
-          "issue": "Pipe leaking", 
-          "reportedBy": "John Burger",
-          "reportedFor": "SWG",
-          "attachments": 5,
-          "timestamp": "08 Jun 2021, 09:04 AM"
-        },
-        { 
-          "issue": "Car not starting", 
-          "reportedBy": "Jane Doe",
-          "reportedFor": "AUT",
-          "attachments": 2,
-          "timestamp": "18 Jun 2021, 08:34 AM 2"
-        },
-        { 
-          "issue": "Door key spoilt", 
-          "reportedBy": "Sara Mandi",
-          "reportedFor": "CAR",
-          "attachments": 2,
-          "timestamp": "18 Jun 2021, 07:54 AM"
-        }
-      ]
-    },
-    {
-      "title": "In Progress",
-      "data": [
-        { 
-          "issue": "Cable burnt", 
-          "reportedBy": "Rebecca Fries", 
-          "reportedFor": "ELC",
-          "attachments": 0,
-          "timestamp": "22 Jun 2021, 12:04 PM" 
-        },
-        { 
-          "issue": "Kitchen tap not working", 
-          "reportedBy": "Juliet Daniels", 
-          "reportedFor": "PLM",
-          "attachments": 2,
-          "timestamp": "25 Jun 2021, 03:04 PM" 
-        }
-    ]
-    },
-    {
-      "title": "Completed",
-      "data": [
-        { 
-          "issue": "Printer not printing", 
-          "reportedBy": "Charles McFish", 
-          "reportedFor": "OFF",
-          "attachments": 3,
-          "timestamp": "24 Jun 2021, 01:14 PM" 
-        },
-        { 
-          "issue": "Generator smoking", 
-          "reportedBy": "Toni Daniels", 
-          "reportedFor": "GEN",
-          "attachments": 0,
-          "timestamp": "29 Jun 2021, 04:04 PM" 
-        }
-      ]
-    }
-  ]
-}
+import { connect } from "react-redux";
 
 
-const Issues = ({ navigation }) => {
+// Mock data
+import _NOTSTARTED from "../utils/_NOTSTARTED.json";
+import _INPROGRESS from "../utils/_INPROGRESS.json";
+import _COMPLETED from "../utils/_COMPLETED.json";
 
-  const data = DATA.results
+
+const ItemHeader = ({ title }) => (
+  <View>
+    <Text style={styles.header}>{title}</Text>
+    <Text style={styles.header}>{console.log(title)}</Text>
+  </View>
+);
+
+const Issues = (props) => {
+
+  const { currentUser, isInProgress, isCompleted } = props;
+
+  const [notStarted, setNotStarted] = useState(_NOTSTARTED.notStarted);
+  const [inProgress, setInProgress] = useState(isInProgress);
+  const [completed, setCompleted] = useState(isCompleted);
   const [query, setQuery] = useState("");
 
   // const getMovies = async () => {
@@ -105,6 +54,12 @@ const Issues = ({ navigation }) => {
     updateQuery("");
   }
 
+  const data = [
+    // {title: 'Not Started', data: notStarted},
+    {title: 'In Progress', data: inProgress},
+    {title: 'Completed', data: completed}
+  ];
+
   const result = data.reduce((acc, currentObj) => {
     let output = {}
     const transformedQuery = query.toLowerCase();
@@ -112,7 +67,7 @@ const Issues = ({ navigation }) => {
     const currentData = currentObj.data
 
     const filteredData =currentData.filter(item => {
-      const transformedItem = item.issue.toLowerCase();
+      const transformedItem = item.title.toLowerCase();
       return transformedItem.includes(transformedQuery)
     })
 
@@ -128,12 +83,28 @@ const Issues = ({ navigation }) => {
     }
   }, [])
 
-  // console.log(result);
+
+  const renderSectionHeader = ({ section }) => (
+    <ItemHeader 
+      title={section.title}
+    />
+  );
+
+  const renderItem = ({ item, index }) => (
+    <IssuesList 
+      navigation={props.navigation}
+      key={index}
+      title={item.title}
+      description={item.description}
+      reportedBy={item.reportedBy} 
+      reportedFor={item.department}
+      attachments={item.downloadURL}
+      timestamp={item.creation.seconds} />
+  );
   
   return (
     <SafeAreaView style={styles.container}>
         <SearchBar 
-          // style={{backgroundColor: purple_95, color: darkPurple}}
           placeholder="Search issues"
           onChangeText={(e) => updateQuery(e)}
           value={query} 
@@ -141,19 +112,8 @@ const Issues = ({ navigation }) => {
       <SectionList        
         sections={result} 
         keyExtractor={(item, index) => item + index}
-        renderItem={({ item, index }) => 
-          <IssuesList 
-            navigation={navigation}
-            key={index}
-            title={item.title}
-            issue={item.issue}
-            reportedBy={item.reportedBy} 
-            reportedFor={item.reportedFor}
-            attachments={item.attachments}
-            timestamp={item.timestamp} />}
-        renderSectionHeader={({ section: { title } }) => (
-          <Text style={styles.header}>{title}</Text>
-        )}
+        renderItem={renderItem}
+        renderSectionHeader={renderSectionHeader}
       />
     </SafeAreaView>
   );
@@ -174,4 +134,13 @@ const styles = StyleSheet.create({
 })
 
 
-export default Issues;
+const mapStateToProps = (store) => ({
+  currentUser: store.userState.currentUser,
+  isInProgress: store.userState.isInProgress,
+  isCompleted: store.userState.isCompleted
+});
+
+// const mapDispatchToProps = (dispatch) => bindActionCreators({ fetchUser }, dispatch);
+
+export default connect(mapStateToProps, null)(Issues);
+

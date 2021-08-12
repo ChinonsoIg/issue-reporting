@@ -1,9 +1,9 @@
-import React from "react";
-import { View, Text, StyleSheet, Pressable } from "react-native";
+import React, { useState } from "react";
+import { View, Text, StyleSheet, FlatList, SectionList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "react-native-vector-icons";
 
-import { purple, white, goldenRod, purple_95, purple_80, bgSecondary, darkerPurple, purple_70 } from "../utils/colours";
+import { purple, white, purple_95, darkerPurple } from "../utils/colours";
 
 
 const Task = () => {
@@ -43,52 +43,20 @@ const Task = () => {
   )
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    marginHorizontal: 12
-  },
-  boldText: {
-    fontWeight: 'bold',
-    color: darkerPurple,
-    fontSize: 18,
-  },
-  btn: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 32,
-    borderRadius: 5,
-    elevation: 3,
-    borderRadius: 5,
-    backgroundColor: purple,
-  },
-  btnText: {
-    fontSize: 16,
-    lineHeight: 21,
-    fontWeight: 'bold',
-    letterSpacing: 0.25,
-    color: white,
-  },
-  btnOutline: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 10,
-    paddingHorizontal: 10,
-    borderRadius: 4,
-    elevation: 3,
-    borderRadius: 5,
-    borderColor: purple,
-    borderWidth: 5,
-    backgroundColor: purple_95,
-  },
-  btnTextOutline: {
-    fontSize: 14,
-    lineHeight: 21,
-    fontWeight: 'bold',
-    letterSpacing: 0.25,
-    color: purple,
-  },
-})
+
 
 export default Task;
+
+// var washingtonRef = db.collection("cities").doc("DC");
+
+// // Set the "capital" field of the city 'DC'
+// return washingtonRef.update({
+//     capital: true
+// })
+// .then(() => {
+//     console.log("Document successfully updated!");
+// })
+// .catch((error) => {
+//     // The document probably doesn't exist.
+//     console.error("Error updating document: ", error);
+// });

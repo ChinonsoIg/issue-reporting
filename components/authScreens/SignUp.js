@@ -4,7 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import DropDownPicker from "react-native-dropdown-picker";
 import { purple, white, purple_95, purple_80, darkPurple, purple_40, black } from "../../utils/colours";
 import landingImage from "../../image/work_together.png";
-import { depts, loc } from "../../utils/api";
+import { dept } from "../../utils/api";
 
 import firebase from "firebase";
 
@@ -17,12 +17,13 @@ const SignIn = () => {
   // To select department
   const [deptOpen, setDeptOpen] = useState(false);
   const [department, setDepartment] = useState(null);
-  const [dept, setDept] = useState(depts);
+  const [depts, setDepts] = useState(dept);
 
   const onSignUp = () => {
     firebase.auth().createUserWithEmailAndPassword(email, password)
       .then((result) => {
-        firebase.firestore().collection("users")
+        firebase.firestore()
+          .collection("users")
           .doc(firebase.auth().currentUser.uid)
           .set({
             name,
@@ -75,11 +76,11 @@ const SignIn = () => {
               <DropDownPicker
                 placeholder='Select department'
                 open={deptOpen}
-                value={deptValue}
-                items={department}
+                value={department}
+                items={depts}
                 setOpen={setDeptOpen}
-                setValue={setDeptValue}
-                setItems={setDepartment}
+                setValue={setDepartment}
+                setItems={setDepts}
                 zIndex={10000}
                 style={{borderWidth: 1, borderColor: purple_80, borderRadius: 5}}
               />
@@ -89,12 +90,14 @@ const SignIn = () => {
               onChangeText={(e) => setPassword(e)}
               value={password}
               placeholder="Password"
+              secureTextEntry={true}
             />
             <TextInput 
               style={styles.input}
               onChangeText={(e) => setConfirmPassword(e)}
               value={confirmPassword}
               placeholder="Confirm password"
+              secureTextEntry={true}
             />
             <View 
               style={{

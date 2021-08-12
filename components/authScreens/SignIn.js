@@ -4,6 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { purple, white, purple_95, purple_80, darkPurple, purple_40 } from "../../utils/colours";
 import landingImage from "../../image/work_together.png";
 
+
 import firebase from "firebase";
 
 const SignIn = ({ navigation }) => {
@@ -56,6 +57,7 @@ const SignIn = ({ navigation }) => {
               onChangeText={(e) => setPassword(e)}
               value={password}
               placeholder="Password"
+              secureTextEntry={true}
             />
             <View 
               style={{
@@ -144,5 +146,6 @@ const styles = StyleSheet.create({
     color: purple,
   },
 })
+
 
 export default SignIn;
