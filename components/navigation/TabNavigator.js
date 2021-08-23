@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Platform } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -7,10 +7,12 @@ import { purple, gray } from "../../utils/colours";
 
 import { HomeStackNavigator, IssuesStackNavigator, NotificationsStackNavigator, YouStackNavigator } from "./StackNavigator";
 
+
+
 const Tab = createBottomTabNavigator();
 
 
-const TabNavigator = () => {
+const TabNavigator = (props) => {
 
   return (
     <Tab.Navigator
@@ -90,5 +92,7 @@ const TabNavigator = () => {
     </Tab.Navigator>
   );
 }
+
+
 
 export default TabNavigator;

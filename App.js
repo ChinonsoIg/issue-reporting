@@ -1,4 +1,4 @@
-import React, { Component, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { StyleSheet } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -11,14 +11,23 @@ import SplashScreen from "./components/SplashScreen";
 
 // For redux
 import { Provider } from "react-redux";
-import { createStore, applyMiddleware } from "redux";
-import thunk from "redux-thunk";
-import rootReducer from "./redux/reducers";
-const store = createStore(rootReducer, applyMiddleware(thunk))
+import { store } from "./redux/store";
+// import { createStore, applyMiddleware } from "redux";
+// import thunk from "redux-thunk";
+// import reducer from "./redux/reducer";
+// const store = createStore(reducer, applyMiddleware(thunk))
 
 
 import firebase from "firebase/app";
-
+const firebaseConfig = {
+  apiKey: "AIzaSyCzj_doR5odD6sdXnvJL2ncpwiIL-HkVhU",
+  authDomain: "react-native-f2f5f.firebaseapp.com",
+  databaseURL: "https://react-native-f2f5f-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "react-native-f2f5f",
+  storageBucket: "react-native-f2f5f.appspot.com",
+  messagingSenderId: "609734983271",
+  appId: "1:609734983271:web:cbe5230643d3d0f91cdec2"
+};
 
 // This checks that no other instance of firebase is running
 if (firebase.apps.length === 0) {
@@ -42,10 +51,6 @@ const App = () => {
         setLoggedIn(true)
       }
 
-      // return () => {
-      //   setIsLoading(false);
-      //   setLoggedIn(false)
-      // };
     })
 
   }, [loggedIn])

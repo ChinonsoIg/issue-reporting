@@ -11,14 +11,25 @@ import firebase from "firebase/app";
 import { bgSecondary, darkerPurple, white, red, purple, purple_80, purple_40, purple_95, purple_70, black, darkPurple } from "../utils/colours";
 import { dept, loc } from "../utils/api";
 import CameraScreen from "./CameraScreen";
+
 import { connect } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { addNotStarted } from "../redux/slices/notStartedSlice";
 
 // Uninstall this
 import SelectDropdown from "react-native-select-dropdown";
 
 
 const ReportIssue = (props) => {
-  const { currentUser } = props;
+  const dispatch = useDispatch();
+  const currentUser = useSelector((state) => {
+    const vim = state.user
+    const vimc = vim[0]
+    if (vimc != undefined) {
+      return vimc
+    }
+    return null
+  });
 
   // For issue title
   const [title, setTitle] = useState("");
@@ -36,14 +47,13 @@ const ReportIssue = (props) => {
   // For issue description
   const [description, setDescription] = useState(""); 
 
-
   
   const [pictureURI, setPictureURI] = useState(null);
   
   const sendData = (data) => {
     setPictureURI(data)
     alert(data);
-    // console.log(data);
+    // console.log(
   };
 
 
@@ -66,7 +76,7 @@ const ReportIssue = (props) => {
       task.snapshot.ref.getDownloadURL()
         .then((snapshot) => {
           savePostData(snapshot)
-          console.log(snapshot);
+          console.log('snap ',snapshot);
         })
     }
 
@@ -79,7 +89,7 @@ const ReportIssue = (props) => {
   }
 
   const savePostData = (downloadURL) => {
-    const { name, email } = currentUser
+    const { name } = currentUser;
     const newPostData = firebase.firestore().collection("issues").doc()
       newPostData.set({
         downloadURL,
@@ -88,31 +98,26 @@ const ReportIssue = (props) => {
         location,
         description,
         reportedBy: name,
+        isNotStarted: true,
         creation: firebase.firestore.FieldValue.serverTimestamp()
       })
       .then(() => {
         console.log({
+          id,
+          downloadURL,
           title,
           department,
           location,
           description,
-        });
+          reportedBy: name,
+          isNotStarted: true,
+          creation: firebase.firestore.FieldValue.serverTimestamp()
+        })
       })
   }
 
-
-  // const onSubmit = () => {
-  //   console.log({
-  //     title,
-  //     department,
-  //     location,
-  //     description,
-  //   })
-  // }
-
   return (
-    <SafeAreaView style={styles.container}>
-     
+    <SafeAreaView style={styles.container}>     
       <KeyboardAvoidingView
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'} >
@@ -274,12 +279,6 @@ const styles = StyleSheet.create({
 })
 
 
-const mapStateToProps = (store) => ({
-  currentUser: store.userState.currentUser,
-  userIssues: store.userState.userIssues
-});
 
-// const mapDispatchToProps = (dispatch) => bindActionCreators({ fetchUser }, dispatch);
-
-export default connect(mapStateToProps, null)(ReportIssue);
+export default ReportIssue;
 

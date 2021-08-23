@@ -4,7 +4,29 @@ import { Entypo } from "react-native-vector-icons";
 import { white, purple, darkPurple, purple_70 } from "../utils/colours";
 
 
-const IssuesList = ({ title, reportedBy, reportedFor, timestamp, attachments, navigation}) => {
+const IssuesList = ({ title, reportedBy, reportedFor, timestamp, attachments, navigation, id}) => {
+
+  const departmentAbbr = (name) => {
+    switch (name) {
+      case "electrical":
+        return "ELC"
+
+      case "automobile":
+        return "AUT"
+
+      case "information technology":
+        return "IT"
+      
+      case "plumbing and sewage mgt":
+        return "PSM"
+
+      case "medical":
+        return "MED"
+
+      default:
+        return name;
+    }
+  }
 
   return (
     <View style={styles.item}>
@@ -17,7 +39,7 @@ const IssuesList = ({ title, reportedBy, reportedFor, timestamp, attachments, na
           <Text>Reported by: </Text>
           <Text style={{color: purple_70}}>{reportedBy}</Text>
         </View>
-        <Text>{timestamp}</Text>
+        <Text>timestamp</Text>
       </View>
       <View 
         style={{flex:1, 
@@ -26,7 +48,10 @@ const IssuesList = ({ title, reportedBy, reportedFor, timestamp, attachments, na
           justifyContent: 'space-between', 
           alignItems: 'center'}} >
         <Pressable style={styles.btn}
-          onPress={() => navigation.navigate("Task")} >
+          onPress={() => navigation.navigate("Task", {
+            uid: id
+          })} 
+        >
           <Text style={styles.btnText}>View in Tasks</Text>
         </Pressable>
         <View 
@@ -41,7 +66,7 @@ const IssuesList = ({ title, reportedBy, reportedFor, timestamp, attachments, na
             </Text>
           )}
           <View style={styles.circle}>
-            <Text style={{color: white}}>{reportedFor}</Text>
+            <Text style={{color: white}}>{departmentAbbr(reportedFor)}</Text>
           </View>
         </View>
       </View>

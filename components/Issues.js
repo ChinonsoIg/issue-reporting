@@ -4,46 +4,42 @@ import { SearchBar } from "react-native-elements";
 import { SafeAreaView } from "react-native-safe-area-context";
 import IssuesList from "./IssuesList";
 import { bgSecondary, darkerPurple } from "../utils/colours";
-import { connect } from "react-redux";
-
-
-// Mock data
-import _NOTSTARTED from "../utils/_NOTSTARTED.json";
-import _INPROGRESS from "../utils/_INPROGRESS.json";
-import _COMPLETED from "../utils/_COMPLETED.json";
+import { useDispatch, useSelector } from "react-redux";
 
 
 const ItemHeader = ({ title }) => (
   <View>
     <Text style={styles.header}>{title}</Text>
-    <Text style={styles.header}>{console.log(title)}</Text>
   </View>
 );
 
 const Issues = (props) => {
-
-  const { currentUser, isInProgress, isCompleted } = props;
-
-  const [notStarted, setNotStarted] = useState(_NOTSTARTED.notStarted);
-  const [inProgress, setInProgress] = useState(isInProgress);
-  const [completed, setCompleted] = useState(isCompleted);
   const [query, setQuery] = useState("");
 
-  // const getMovies = async () => {
-  //   try {
-  //     const response = await fetch('https://reactnative.dev/movies.json');
-  //     const json = await response.json();
-  //     setData(json.movies);
-  //   } catch (error) {
-  //     console.error(error);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // }
+  const notStarted = useSelector((state) => {
+    const vim = state.notStarted
+    if (vim != undefined) {
+      return vim
+    }
+    return null
+  });
 
-  // useEffect(() => {
-  //   getMovies();
-  // }, []);
+  const inProgress = useSelector((state) => {
+    const vim = state.inProgress
+    if (vim != undefined) {
+      return vim
+    }
+    return null
+  });
+
+  const completed = useSelector((state) => {
+    const vim = state.completed
+    if (vim != undefined) {
+      return vim
+    }
+    return null
+  });
+
 
   const updateQuery = (query) => {
     const trimmedQuery = query.trim();
@@ -55,7 +51,7 @@ const Issues = (props) => {
   }
 
   const data = [
-    // {title: 'Not Started', data: notStarted},
+    {title: 'Not Started', data: notStarted},
     {title: 'In Progress', data: inProgress},
     {title: 'Completed', data: completed}
   ];
@@ -92,6 +88,7 @@ const Issues = (props) => {
 
   const renderItem = ({ item, index }) => (
     <IssuesList 
+      id={item.id}
       navigation={props.navigation}
       key={index}
       title={item.title}
@@ -99,7 +96,8 @@ const Issues = (props) => {
       reportedBy={item.reportedBy} 
       reportedFor={item.department}
       attachments={item.downloadURL}
-      timestamp={item.creation.seconds} />
+      // timestamp={item.creation.seconds} 
+    />
   );
   
   return (
@@ -134,13 +132,5 @@ const styles = StyleSheet.create({
 })
 
 
-const mapStateToProps = (store) => ({
-  currentUser: store.userState.currentUser,
-  isInProgress: store.userState.isInProgress,
-  isCompleted: store.userState.isCompleted
-});
-
-// const mapDispatchToProps = (dispatch) => bindActionCreators({ fetchUser }, dispatch);
-
-export default connect(mapStateToProps, null)(Issues);
+export default Issues;
 
