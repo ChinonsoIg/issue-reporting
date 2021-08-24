@@ -1,9 +1,0 @@
-export const USER_STATE_CHANGE = "USER_STATE_CHANGE";
-export const IS_NOT_STARTED = "IS_NOT_STARTED";
-export const IS_COMPLETED = "IS_COMPLETED";
-export const IS_IN_PROGRESS = "IS_IN_PROGRESS";
-
-export const USER_ISSUES = "USER_ISSUES";
-export const USERS_STATE_CHANGE = "USERS_STATE_CHANGE";
-export const USERS_ISSUES = "USERS_ISSUES";
-export const ALL_ISSUES = "ALL_ISSUES";

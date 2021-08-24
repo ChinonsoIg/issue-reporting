@@ -6,9 +6,11 @@ import { MaterialCommunityIcons } from "react-native-vector-icons";
 
 import { bgSecondary, darkPurple, white, purple, purple_70, purple_80, purple_95, red, purple_40, darkerPurple } from "../utils/colours";
 import logo from "../assets/logo.png";
-import { color } from "react-native-elements/dist/helpers";
 
-const Notifications = ({ navigation }) => {
+// For redux
+import { useSelector } from "react-redux";
+
+const Notifications = (props) => {
 
   return (
     <SafeAreaView style={styles.container}>

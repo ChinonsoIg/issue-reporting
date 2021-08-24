@@ -12,12 +12,10 @@ import { bgSecondary, darkerPurple, white, red, purple, purple_80, purple_40, pu
 import { dept, loc } from "../utils/api";
 import CameraScreen from "./CameraScreen";
 
-import { connect } from "react-redux";
+// For redux
 import { useDispatch, useSelector } from "react-redux";
 import { addNotStarted } from "../redux/slices/notStartedSlice";
 
-// Uninstall this
-import SelectDropdown from "react-native-select-dropdown";
 
 
 const ReportIssue = (props) => {

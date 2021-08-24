@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { View, Text, StyleSheet, Pressable, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -10,8 +10,8 @@ import firebase from "firebase";
 import { useDispatch, useSelector } from "react-redux";
 import { getUser } from "../redux/slices/userSlice";
 import { getNotStarted } from "../redux/slices/notStartedSlice";
-import { deleteInProgress, getInProgress } from "../redux/slices/inProgressSlice";
-import { getCompleted, deleteCompleted } from "../redux/slices/completedSlice";
+import { getInProgress } from "../redux/slices/inProgressSlice";
+import { getCompleted } from "../redux/slices/completedSlice";
 
 const HomeScreen = (props) => {
   const dispatch = useDispatch();
@@ -56,9 +56,8 @@ const HomeScreen = (props) => {
     .get()
     .then((snapshot) => {
       if (snapshot.exists) {
-        // console.log(snapshot.id)
-        const value = snapshot.data();
-        dispatch(getUser(value))
+        const data = snapshot.data();
+        dispatch(getUser(data))
       } else {
         console.log('Does not exist!!')
       }
@@ -72,19 +71,19 @@ const HomeScreen = (props) => {
     .get()
     .then((snapshot) => {
       let isNotStarted = snapshot.docs.map((doc) => {
-          const id = doc.id;
-          const data = doc.data();
+        const id = doc.id;
+        const data = doc.data();
 
-          return { id, ...data }
-      })
+        return { id, ...data };
+      });
       let deleteTimer = isNotStarted.map((doc) => {
-        delete doc.creation
-        return {...doc}
-      })
-      let x = [...new Set([...deleteTimer,...notStarted])]     
+        delete doc.creation;
+        return doc;
+      });
+
       dispatch(
-        getNotStarted(x)
-      )
+        getNotStarted(deleteTimer)
+      );
     })
   }
 
@@ -101,13 +100,12 @@ const HomeScreen = (props) => {
           return { id, ...data }
       })
       let deleteTimer = isInProgress.map((doc) => {
-        delete doc.creation
-        return {...doc}
-      })
-      let x = [...new Set([...deleteTimer,...inProgress])]
-      // console.log(x)
+        delete doc.creation;
+        return doc;
+      });
+
       dispatch(
-        getInProgress(x)
+        getInProgress(deleteTimer)
       )
     })
   }
@@ -123,16 +121,15 @@ const HomeScreen = (props) => {
           const data = doc.data();
 
           return { id, ...data }
-      })
+      });
       let deleteTimer = isCompleted.map((doc) => {
-        delete doc.creation
-        return {...doc}
-      })
-      let x = [...new Set([...deleteTimer,...completed])]
-      // return f;
+        delete doc.creation;
+        return doc;
+      });
+
       dispatch(
-        getCompleted(x)
-      )
+        getCompleted(deleteTimer)
+      );
     })
   }
 
@@ -147,8 +144,8 @@ const HomeScreen = (props) => {
 
   if (!currentUser || (currentUser == undefined)) {
     return (
-      <View>
-        <Text>Loading...</Text>
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text style={{ color: purple, fontSize: 20 }}>Loading...</Text>
       </View>
     )
   }

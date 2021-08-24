@@ -5,9 +5,8 @@ export const notStartedSlice = createSlice({
   initialState: [],
   reducers: {
     getNotStarted: (state, action) => {
-      let f = [...new Set([...state,...action.payload])]
-      console.log(f)
-			state.push(...f)
+      let spreadData = [...new Set([...state,...action.payload])];
+			return spreadData;
 		},
 		deleteNotStarted: (state, action) => {
 			return state.filter((issue) => issue.id !== action.payload.id);
@@ -16,7 +15,7 @@ export const notStartedSlice = createSlice({
 });
 
 
-export const { getNotStarted, toggleComplete, deleteNotStarted } = notStartedSlice.actions;
+export const { getNotStarted, deleteNotStarted } = notStartedSlice.actions;
 
 export default notStartedSlice.reducer;
 

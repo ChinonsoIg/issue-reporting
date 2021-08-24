@@ -2,9 +2,12 @@ import React, { useState } from "react";
 import { Text, View, StyleSheet, SectionList } from "react-native";
 import { SearchBar } from "react-native-elements";
 import { SafeAreaView } from "react-native-safe-area-context";
+
 import IssuesList from "./IssuesList";
 import { bgSecondary, darkerPurple } from "../utils/colours";
-import { useDispatch, useSelector } from "react-redux";
+
+// For redux
+import { useSelector } from "react-redux";
 
 
 const ItemHeader = ({ title }) => (
@@ -46,6 +49,7 @@ const Issues = (props) => {
     setQuery(trimmedQuery)
   }
   
+  // Delete clearQuery. The Searchbar installed already has the feature
   const clearQuery = () => {
     updateQuery("");
   }

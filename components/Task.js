@@ -1,21 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Pressable, Image } from "react-native";
-import { StackActions } from '@react-navigation/native';
-
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "react-native-vector-icons";
 
 import { bgSecondary, darkerPurple, purple_70, purple, white, purple_95 } from "../utils/colours";
 
 // For redux
-import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
-import { fetchIsNotStarted, fetchIsInProgress, fetchIsCompleted } from "../redux/actions/index";
-import { IS_NOT_STARTED, IS_IN_PROGRESS, IS_COMPLETED } from "../redux/constants/index";
 import firebase from "firebase";
 import { useDispatch, useSelector } from "react-redux";
-import { getNotStarted, deleteNotStarted } from "../redux/slices/notStartedSlice";
-import { addInProgress, deleteInProgress, getInProgress } from "../redux/slices/inProgressSlice";
+import { deleteNotStarted } from "../redux/slices/notStartedSlice";
+import { addInProgress, deleteInProgress } from "../redux/slices/inProgressSlice";
 import { addCompleted } from "../redux/slices/completedSlice";
 
 const Task = (props) => {
@@ -28,14 +22,6 @@ const Task = (props) => {
     const vimc = vim[0]
     if (vimc != undefined) {
       return vimc
-    }
-    return null
-  });
-
-  const notStarted = useSelector((state) => {
-    const vim = state.notStarted
-    if (vim != undefined) {
-      return vim
     }
     return null
   });
@@ -83,8 +69,10 @@ const Task = (props) => {
           delete task.creation;
           delete task.isNotStarted;
           return { ...task }
-        })
+        });
+
         let trimData = removeUnwanted[0];
+
         dispatch(
           addInProgress({ 
             isNotStarted: false,
@@ -92,11 +80,13 @@ const Task = (props) => {
             isInProgressBy: name,
             ...trimData
           })
-        )
+        );
+
         dispatch(
           deleteNotStarted({ id: uid })
-        )
-         props.navigation.navigate("Home")
+        );
+
+        navigation.navigate("Home");
       })
       .catch((error) => {
           console.error("Error updating document: ", error);
@@ -123,8 +113,9 @@ const Task = (props) => {
           delete task.creation;
           delete task.isInProgress;
           return { ...task }
-        })
+        });
         let trimData = removeUnwanted[0];
+
         dispatch(
           addCompleted({ 
             isInProgress: false,
@@ -132,12 +123,13 @@ const Task = (props) => {
             isCompletedBy: name,
             ...trimData
           })
-        )
+        );
+
         dispatch(
           deleteInProgress({ id: uid })
-        )
+        );
 
-         props.navigation.navigate("Home")
+        navigation.navigate("Home");
       })
       .catch((error) => {
           console.error("Error updating document: ", error);
