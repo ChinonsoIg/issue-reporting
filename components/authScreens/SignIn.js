@@ -1,24 +1,66 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, StyleSheet, Pressable, TouchableHighlight, Image } from "react-native";
+import { View, Text, TextInput, StyleSheet, Pressable, TouchableHighlight, Image, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { purple, white, purple_95, purple_80, darkPurple, purple_40 } from "../../utils/colours";
+import * as Notifications from 'expo-notifications';
 import landingImage from "../../image/work_together.png";
-
+import { purple, white, purple_95, purple_80, darkPurple, purple_40 } from "../../utils/colours";
 
 import firebase from "firebase";
+import { useDispatch, useSelector } from "react-redux";
+import { currentUser } from "../../redux/slices/userSlice";
+
+// For notifications
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
+
+async function schedulePushNotification(name) {
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      title: `${name} Welcome back`,
+      body: "You're signed in!",
+      // data: { data: 'goes here njj hjjj' },
+    },
+    trigger: { seconds: 2 },
+  });
+}
+
 
 const SignIn = ({ navigation }) => {
+  // const dispatch = useDispatch()
+  const user = useSelector(currentUser);
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const onSignIn = () => {
-    firebase.auth().signInWithEmailAndPassword(email, password)
+    try {
+      firebase.auth().signInWithEmailAndPassword(email, password)
       .then((result) => {
-        console.log(result)
+        console.log('signin: ',result);
+        // schedulePushNotification(user.name);
       })
-      .then((error) => {
-        console.log(error)
+      .catch((error) => {
+        switch (error.code) {
+          case "auth/invalid-email":
+            Alert.alert("Please enter a valid email address")          
+            break;
+          case "auth/user-not-found":
+            Alert.alert("User not found")
+            break;        
+          default:
+            Alert.alert("Email and/or password incorrect")
+            break;
+        }
       })
+    } catch (err) {
+      console.error(err);
+    }
+
   }
 
   return (
@@ -76,7 +118,11 @@ const SignIn = ({ navigation }) => {
               </Text>
             </View>
           </View>
-          <TouchableHighlight style={styles.btn} onPress={onSignIn} underlayColor={purple_80} >
+          <TouchableHighlight 
+            style={styles.btn} 
+            onPress={onSignIn} 
+            underlayColor={purple_80} 
+          >
             <Text style={styles.btnText}>Sign In</Text>
           </TouchableHighlight>
         </View>

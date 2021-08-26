@@ -4,7 +4,7 @@ import { SearchBar } from "react-native-elements";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import IssuesList from "./IssuesList";
-import { bgSecondary, darkerPurple } from "../utils/colours";
+import { bgSecondary, darkerPurple, purple_40 } from "../utils/colours";
 
 // For redux
 import { useSelector } from "react-redux";
@@ -103,14 +103,33 @@ const Issues = (props) => {
       // timestamp={item.creation.seconds} 
     />
   );
+
   
-  return (
-    <SafeAreaView style={styles.container}>
+  if (notStarted.length === 0 && 
+    inProgress.length === 0 && 
+    completed.length === 0
+    ) {
+    return (
+      <SafeAreaView style={styles.container}>
         <SearchBar 
           placeholder="Search issues"
           onChangeText={(e) => updateQuery(e)}
           value={query} 
         />
+        <View>
+          <Text style={{fontSize: 18, color: purple_40}}>No issues!</Text>
+        </View>
+      </SafeAreaView>
+    )
+  }
+  
+  return (
+    <SafeAreaView style={styles.container}>
+      <SearchBar 
+        placeholder="Search issues"
+        onChangeText={(e) => updateQuery(e)}
+        value={query} 
+      />
       <SectionList        
         sections={result} 
         keyExtractor={(item, index) => item + index}

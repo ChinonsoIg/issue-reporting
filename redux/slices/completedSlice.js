@@ -5,7 +5,7 @@ export const completedSlice = createSlice({
   initialState: [],
   reducers: {
     getCompleted: (state, action) => {
-			let spreadData = [...new Set([...state,...action.payload])];
+			let spreadData = [...state, ...action.payload];
       return spreadData;
 		},
     addCompleted: (state, action) => {
@@ -14,6 +14,8 @@ export const completedSlice = createSlice({
 		},
 	},
 });
+
+
 
 
 export const { getCompleted, addCompleted } = completedSlice.actions;

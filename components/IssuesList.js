@@ -1,7 +1,29 @@
 import React from "react";
+import { TouchableOpacity } from "react-native";
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import { Entypo } from "react-native-vector-icons";
+import * as Notifications from 'expo-notifications';
 import { white, purple, darkPurple, purple_70 } from "../utils/colours";
+
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
+
+async function schedulePushNotification(a,b,c) {
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      title: a + "you've mail! 📬",
+      body: b+'ash dhdh dhsjdh sh',
+      data: { data: 'goes here njj hjjj' },
+    },
+    trigger: { seconds: 2 },
+  });
+}
 
 
 const IssuesList = ({ title, reportedBy, reportedFor, timestamp, attachments, navigation, id}) => {
@@ -31,7 +53,11 @@ const IssuesList = ({ title, reportedBy, reportedFor, timestamp, attachments, na
   return (
     <View style={styles.item}>
       <View>
-        <Text style={styles.title}>{title}</Text>
+        <TouchableOpacity
+          onPress={() => schedulePushNotification(title,reportedBy)}
+        >
+          <Text style={styles.title}>{title}</Text>
+        </TouchableOpacity>
         <View 
           style={{flex: 1, 
             flexDirection: "row", 

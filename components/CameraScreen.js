@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Button, Image } from 'react-native';
 import { Camera } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const CameraScreen = (props) => {
   const [hasGalleryPermission, setHasGalleryPermission] = useState(null);
@@ -64,7 +63,7 @@ const CameraScreen = (props) => {
       </View>
 
       <Button
-        title="Flip Image"
+        title="Flip Camera"
         onPress={() => {
           setType(
             type === Camera.Constants.Type.back
@@ -76,8 +75,11 @@ const CameraScreen = (props) => {
       <Button title="Take Picture" onPress={() => takePicture()} />
       <Button title="Pick Image From Gallery" onPress={() => pickImage()} />
       <Button title="Save" onPress={() => {
-        props.route.params.sendData(image)
-        goBack()
+        props.navigation.navigate({
+          name: "Report an Issue",
+          params: {pictureURI: image},
+          merge: true
+        });
       }} />
       {image && <Image source={{ uri: image }} style={{ flex: 1 }} />}
     </View>

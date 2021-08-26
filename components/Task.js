@@ -3,11 +3,12 @@ import { View, Text, StyleSheet, Pressable, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "react-native-vector-icons";
 
-import { bgSecondary, darkerPurple, purple_70, purple, white, purple_95 } from "../utils/colours";
+import { bgSecondary, darkerPurple, purple_70, purple, purple_95 } from "../utils/colours";
 
 // For redux
 import firebase from "firebase";
 import { useDispatch, useSelector } from "react-redux";
+import { currentUser} from "../redux/slices/userSlice"
 import { deleteNotStarted } from "../redux/slices/notStartedSlice";
 import { addInProgress, deleteInProgress } from "../redux/slices/inProgressSlice";
 import { addCompleted } from "../redux/slices/completedSlice";
@@ -17,14 +18,7 @@ const Task = (props) => {
   let uid = route.params.uid;
   const dispatch = useDispatch();
 
-  const currentUser = useSelector((state) => {
-    const vim = state.user
-    const vimc = vim[0]
-    if (vimc != undefined) {
-      return vimc
-    }
-    return null
-  });
+  const user = useSelector(currentUser);
 
   const [taskData, setTaskData] = useState([])
 
@@ -53,7 +47,7 @@ const Task = (props) => {
   }, [uid])
 
   const markAsInProgress = () => {
-    const { name, department } = currentUser;
+    const { name, department } = user;
     let markAsInProgressRef = firebase.firestore().collection("issues").doc(uid);
 
     if(taskData[0].department === department) {
@@ -97,43 +91,83 @@ const Task = (props) => {
   }
 
   const markAsCompleted = () => {
-    const { name, department } = currentUser;
+    const { name, department } = user;
     let markAsCompletedRef = firebase.firestore().collection("issues").doc(uid);
 
     if(taskData[0].department === department) {
-      markAsCompletedRef.update({
-        "isInProgress": false,
-        isCompleted: true,
-        isCompletedBy: name
-      })
-      .then(() => {
-        console.log("Document successfully updated!");
-
-        let removeUnwanted = taskData && taskData.map((task) => {
-          delete task.creation;
-          delete task.isInProgress;
-          return { ...task }
-        });
-        let trimData = removeUnwanted[0];
-
-        dispatch(
-          addCompleted({ 
-            isInProgress: false,
-            isCompleted: true,
-            isCompletedBy: name,
-            ...trimData
-          })
-        );
-
-        dispatch(
-          deleteInProgress({ id: uid })
-        );
-
-        navigation.navigate("Home");
-      })
-      .catch((error) => {
-          console.error("Error updating document: ", error);
-      });
+      
+      // If isInProgress is true, update isInProgress and add isCompleted, else
+      // If false, add isInProgress and isCompleted as done by same user
+      taskData[0].isInProgress ? (
+        markAsCompletedRef.update({
+          "isInProgress": false,
+          isCompleted: true,
+          isCompletedBy: name
+        })
+        .then(() => {
+          console.log("Document successfully updated!");
+  
+          let removeUnwanted = taskData && taskData.map((task) => {
+            delete task.creation;
+            delete task.isInProgress;
+            return { ...task }
+          });
+          let trimData = removeUnwanted[0];
+  
+          dispatch(
+            addCompleted({ 
+              isInProgress: false,
+              isCompleted: true,
+              isCompletedBy: name,
+              ...trimData
+            })
+          );
+  
+          dispatch(
+            deleteInProgress({ id: uid })
+          );
+  
+          navigation.navigate("Home");
+        })
+        .catch((error) => {
+            console.error("Error updating document: ", error);
+        })
+      ) : (
+        markAsCompletedRef.update({
+          isInProgress: false,
+          isInProgressBy: name,
+          isCompleted: true,
+          isCompletedBy: name
+        })
+        .then(() => {
+          console.log("Document successfully updated!");
+  
+          let removeUnwanted = taskData && taskData.map((task) => {
+            delete task.creation;
+            delete task.isInProgress;
+            return { ...task }
+          });
+          let trimData = removeUnwanted[0];
+  
+          dispatch(
+            addCompleted({ 
+              isInProgress: false,
+              isCompleted: true,
+              isCompletedBy: name,
+              ...trimData
+            })
+          );
+  
+          dispatch(
+            deleteInProgress({ id: uid })
+          );
+  
+          navigation.navigate("Home");
+        })
+        .catch((error) => {
+            console.error("Error updating document: ", error);
+        })
+      )
     } else {
       console.error("Not your dept");
     }
@@ -143,14 +177,34 @@ const Task = (props) => {
     <SafeAreaView style={styles.container}>
       {taskData && taskData.map((task) => {
         return (
-        <View style={{flex: 1}} key={task.title}>
+        <View style={{flex: 1}} key={task.id}>
           <View style={{flexDirection: 'row', justifyContent: 'space-between', marginVertical: 10}} >
             <Text style={styles.boldText}>{task.title}</Text>
-            <MaterialCommunityIcons
-              name="check-circle"
-              color={purple_70}
-              size={24} 
-            />
+            <View>
+              {
+                task.isNotStarted ? (
+                  <MaterialCommunityIcons
+                    name="checkbox-blank-circle-outline"
+                    color={purple_70}
+                    size={24} 
+                  />
+                ) : (
+                  task.isInProgress ? (
+                    <MaterialCommunityIcons
+                      name="circle-half-full"
+                      color={purple_70}
+                      size={24}
+                    />
+                  ) : (
+                    <MaterialCommunityIcons
+                    name="check-circle"
+                    color={purple_70}
+                    size={24} 
+                  />
+                  )
+                )
+              }
+            </View>
           </View>
           <View>
             <Image style={styles.image}
@@ -163,7 +217,26 @@ const Task = (props) => {
             <Text style={{marginHorizontal: 10}}>time piece</Text>
           </View>
           <View style={{flexDirection: 'row', justifyContent: 'flex-start', marginVertical: 10}}>
-            <Text>To be resoslved by: {task.department} department</Text>
+            <View>
+              {
+                task.isNotStarted && (
+                  <Text>To be resoslved by: {task.department} department.</Text>
+                )
+              }
+              {
+                task.isInProgress && (
+                  <Text>Marked as in progress by: {task.isInProgressBy}</Text>
+                )
+              }
+              {
+                task.isCompleted && (
+                  <>
+                    <Text>Marked as in progress by: {task.isInProgressBy}</Text>
+                    <Text>Resolved by: {task.isCompletedBy}</Text>
+                  </>
+                )
+              }
+            </View>
           </View>
           <View style={{flexDirection: 'row', justifyContent: 'space-between', marginVertical: 10}}>
             {
@@ -207,27 +280,13 @@ const styles = StyleSheet.create({
     marginTop: 15,
   },
   image: {
-    width: 300,
+    width: '100%',
     height: 300,
     resizeMode: 'cover',
-    // borderRadius: 75,
   },
-  btn: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 32,
-    borderRadius: 4,
-    elevation: 3,
-    borderRadius: 5,
-    backgroundColor: purple,
-  },
-  btnText: {
-    fontSize: 16,
-    lineHeight: 21,
+  boldText: {
     fontWeight: 'bold',
-    letterSpacing: 0.25,
-    color: white,
+    color: darkerPurple,
   },
   btnOutline: {
     alignItems: 'center',
@@ -243,7 +302,6 @@ const styles = StyleSheet.create({
   btnTextOutline: {
     fontSize: 12,
     lineHeight: 21,
-    // fontWeight: 'bold',
     letterSpacing: 0.25,
     color: purple,
   }

@@ -1,33 +1,23 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, Image, Button, TextInput, Keyboard, KeyboardAvoidingView, TouchableWithoutFeedback, TouchableOpacity, Platform } from "react-native";
-import * as ImagePicker from "expo-image-picker";
-import { Ionicons } from "react-native-vector-icons";
+import { View, Text, StyleSheet, Image, Button, TextInput, Keyboard, KeyboardAvoidingView, TouchableWithoutFeedback, TouchableOpacity, Platform, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import DropDownPicker from "react-native-dropdown-picker";
-import { Camera } from "expo-camera";
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import firebase from "firebase/app";
 
-import { bgSecondary, darkerPurple, white, red, purple, purple_80, purple_40, purple_95, purple_70, black, darkPurple } from "../utils/colours";
+import { bgSecondary, darkerPurple, white, purple, purple_80, purple_40, purple_95, purple_70 } from "../utils/colours";
 import { dept, loc } from "../utils/api";
-import CameraScreen from "./CameraScreen";
+import { generateId, removeWhitespace } from "../utils/helpers";
 
 // For redux
 import { useDispatch, useSelector } from "react-redux";
+import { currentUser} from "../redux/slices/userSlice";
 import { addNotStarted } from "../redux/slices/notStartedSlice";
 
 
 
 const ReportIssue = (props) => {
   const dispatch = useDispatch();
-  const currentUser = useSelector((state) => {
-    const vim = state.user
-    const vimc = vim[0]
-    if (vimc != undefined) {
-      return vimc
-    }
-    return null
-  });
+  const user = useSelector(currentUser);
 
   // For issue title
   const [title, setTitle] = useState("");
@@ -43,20 +33,23 @@ const ReportIssue = (props) => {
   const [locs, setLocs] = useState(loc);
 
   // For issue description
-  const [description, setDescription] = useState(""); 
+  const [description, setDescription] = useState("");
 
+  useEffect(() => {
+    if (props.route.params?.pictureURI) {
+      console.log(props.route.params?.pictureURI)
+    }
+
+  }, [props.route.params?.pictureURI]);
   
-  const [pictureURI, setPictureURI] = useState(null);
-  
-  const sendData = (data) => {
-    setPictureURI(data)
-    alert(data);
-    // console.log(
-  };
-
-
   const uploadImage = async() => {
-    const response = await fetch(pictureURI);
+    if ((title === null) || (department === null) || (location === null) || (description === null)) {
+      console.log('No field should be empty');
+      Alert.alert('No field should be empty!');
+    } else {
+      console.log('you are good to go');
+      
+    const response = await fetch(props.route.params?.pictureURI);
     const blob = await response.blob();
     const childPath = `issue/${firebase.auth().currentUser.uid}/${Math.random().toString(36)}`
 
@@ -75,6 +68,7 @@ const ReportIssue = (props) => {
         .then((snapshot) => {
           savePostData(snapshot)
           console.log('snap ',snapshot);
+          console.log('Done')
         })
     }
 
@@ -83,36 +77,64 @@ const ReportIssue = (props) => {
     }
 
     task.on("state_changed", taskProgress, taskError, taskCompleted)
+    props.navigation.navigate("ReportIssueSuccess");
+  }
 
   }
 
+  // console.log(addNotStarted);
   const savePostData = (downloadURL) => {
-    const { name } = currentUser;
-    const newPostData = firebase.firestore().collection("issues").doc()
-      newPostData.set({
+    // const dispatch = useDispatch();
+    // const addNotStarted = addNotStarted;
+    console.log(addNotStarted);
+    const { name, userId } = user;
+    const word = removeWhitespace(title);
+    const issueId = generateId(word, 'asdfwxyz');
+
+    firebase.firestore().collection("issues").doc()
+      .set({
         downloadURL,
+        issueId,
         title,
         department,
         location,
         description,
         reportedBy: name,
+        reporterUserId: userId,
         isNotStarted: true,
         creation: firebase.firestore.FieldValue.serverTimestamp()
       })
       .then(() => {
-        console.log({
-          id,
+        console.log('items: ',{
+          issueId,
           downloadURL,
           title,
           department,
           location,
           description,
           reportedBy: name,
+          reporterUserId: userId,
           isNotStarted: true,
           creation: firebase.firestore.FieldValue.serverTimestamp()
         })
+        dispatch(
+          addNotStarted({
+            issueId,
+            downloadURL,
+            title,
+            department,
+            location,
+            description,
+            reportedBy: name,
+            reporterUserId: userId,
+            isNotStarted: true,
+          })
+        );
       })
   }
+  
+
+  
 
   return (
     <SafeAreaView style={styles.container}>     
@@ -179,25 +201,22 @@ const ReportIssue = (props) => {
                 <Button
                   title="Take picture"
                   onPress={() =>
-                    props.navigation.navigate('CameraScreen', {
-                      sendData: sendData,
-                    })
+                    props.navigation.navigate('CameraScreen')
                   }
                 />
               </View>
             </View>
 
-
-            {/* {
-              pictureURI && <Image source={pictureURI} style={{ width: 200, height: 150 }} />
-            } */}
-            <View><Text>Gads ka iopornr</Text></View>
+            <View>
+            {
+              props.route.params?.pictureURI && <Image source={{ uri: props.route.params?.pictureURI }} style={{ width: "100%", height: 120 }} />
+            }
+            </View>
 
             <View style={{marginVertical: 8, flex: 1, justifySelf: 'flex-start'}}>
               <TouchableOpacity
                 onPress={() => {
                   uploadImage();
-                  props.navigation.navigate("ReportIssueSuccess");
                 }}                
                 style={styles.btn}>
                 <Text style={styles.btnText}>Submit</Text>

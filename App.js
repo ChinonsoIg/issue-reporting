@@ -43,7 +43,7 @@ const App = () => {
   useEffect(() => {
 
     firebase.auth().onAuthStateChanged((user) => {
-      if(!user) {
+      if(!user || (user == undefined)) {
         setIsLoading(false)
         setLoggedIn(false)        
       } else {
@@ -57,35 +57,36 @@ const App = () => {
 
 
   if (isLoading) {
+    console.log('loading')
+    console.log('log in: APP', loggedIn)
     return (
       <SafeAreaProvider style={styles.container}>
         <SplashScreen />
-      </SafeAreaProvider>      
+      </SafeAreaProvider>
     )
   }
 
+  console.log('loaded')
+  console.log('log in: APP', loggedIn)
   return (
-    <>
-        {
-          loggedIn
-            ? (
-              <Provider store={store}>
-                <NavigationContainer>
-                  <SafeAreaProvider style={styles.container}>
-                    <TabNavigator />
-                  </SafeAreaProvider>
-                </NavigationContainer>
-              </Provider>
-            )
-            : (
-              <NavigationContainer>
-                <SafeAreaProvider style={styles.container}>
-                  <AuthNavigator />
-                </SafeAreaProvider>
-              </NavigationContainer>
-            )            
-        }
-      </>
+    <Provider store={store}>
+      {
+        loggedIn
+          ? (            
+            <NavigationContainer>
+              <SafeAreaProvider style={styles.container}>
+                <TabNavigator />
+              </SafeAreaProvider>
+            </NavigationContainer>            
+          ) : (
+            <NavigationContainer>
+              <SafeAreaProvider style={styles.container}>
+                <AuthNavigator />
+              </SafeAreaProvider>
+            </NavigationContainer>
+          )            
+      }
+    </Provider>
   );
 }
 

@@ -3,27 +3,45 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, Platform, Pressable } 
 import * as ImagePicker from "expo-image-picker";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "react-native-vector-icons";
+import * as Notifications from 'expo-notifications';
 
 import { bgSecondary, darkPurple, white, purple_80, red, darkerPurple } from "../utils/colours";
 import logo from "../assets/logo.png";
 
-import firebase from "firebase";
-
 // For redux
-import { useSelector } from "react-redux";
+import firebase from "firebase";
+import { useSelector, useDispatch } from "react-redux";
+import { logout, currentUser } from "../redux/slices/userSlice";
+
+
+// For notifications
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
+
+async function schedulePushNotification(title) {
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      title,
+      body: `You're signed out!`,
+      data: { data: 'goes here' },
+    },
+    trigger: { seconds: 2 },
+  });
+}
+
 
 const You = (props) => {
-  
-  const currentUser = useSelector((state) => {
-    const vim = state.user
-    const vimc = vim[0]
-    if (vimc != undefined) {
-      return vimc
-    }
-    return null
-  });
 
-  const { name, department } = currentUser
+  const dispatch = useDispatch()
+  
+  const user = useSelector(currentUser);
+
+  const { name, department } = user
 
   const [selectedImage, setSelectedImage] = useState(null)
   let openImagePickerAsync = async () => {
@@ -44,11 +62,16 @@ const You = (props) => {
   }
   
   const onSignOut = () => {
+    const firstname = name.split(' ')[0];
+  
     firebase.auth().signOut()
       .then(() => {
-        console.log('User signed out')
+        console.log('User signed out');
+        dispatch(logout())
+        // schedulePushNotification(firstname);
       })
   }
+
   
   return (
     <SafeAreaView style={styles.container}>
@@ -113,7 +136,10 @@ const You = (props) => {
           color={red}
           style={{paddingRight: 12}}
         />
-        <Text style={[styles.boldText, {color: red}]} onPress={onSignOut}>
+        <Text 
+          style={[styles.boldText, {color: red}]} 
+          onPress={onSignOut} 
+        >
           Sign Out
         </Text>
       </View>

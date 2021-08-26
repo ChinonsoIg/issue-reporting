@@ -1,31 +1,27 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { View, Text, StyleSheet, Pressable, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { MaterialCommunityIcons, Ionicons } from "react-native-vector-icons";
 import { purple, white, goldenRod, purple_95, purple_80, bgSecondary, darkerPurple, purple_70 } from "../utils/colours";
+import { removeWhitespace } from "../utils/helpers";
 
 // For redux
 import firebase from "firebase";
 import { useDispatch, useSelector } from "react-redux";
-import { getUser } from "../redux/slices/userSlice";
+import { login, isLoggedIn, currentUser, logout} from "../redux/slices/userSlice";
 import { getNotStarted } from "../redux/slices/notStartedSlice";
 import { getInProgress } from "../redux/slices/inProgressSlice";
 import { getCompleted } from "../redux/slices/completedSlice";
 
+
 const HomeScreen = (props) => {
   const dispatch = useDispatch();
+  const loggedIn = useSelector(isLoggedIn);
+  const user = useSelector(currentUser);
 
-  const currentUser = useSelector((state) => {
-    const vim = state.user
-    const vimc = vim[0]
-    if (vimc != undefined) {
-      return vimc
-    }
-    return null
-  });
 
-  const notStarted = useSelector((state) => {
+  const notStartedRedux = useSelector((state) => {
     const vim = state.notStarted
     if (vim != undefined) {
       return vim
@@ -33,7 +29,7 @@ const HomeScreen = (props) => {
     return null
   });
 
-  const inProgress = useSelector((state) => {
+  const inProgressRedux = useSelector((state) => {
     const vim = state.inProgress
     if (vim != undefined) {
       return vim
@@ -41,14 +37,32 @@ const HomeScreen = (props) => {
     return null
   });
 
-  const completed = useSelector((state) => {
+  const completedRedux = useSelector((state) => {
     const vim = state.completed
     if (vim != undefined) {
       return vim
     }
     return null
   });
-  
+
+  const manageSession = () => {
+    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
+      .then(() => {
+        // Existing and future Auth states are now persisted in the current
+        // session only. Closing the window would clear any existing state even
+        // if a user forgets to sign out.
+        // ...
+        // New sign-in will be persisted with session persistence.
+        return firebase.auth().signInWithEmailAndPassword(email, password);
+      })
+      .catch((error) => {
+        // Handle Errors here.
+        var errorCode = error.code;
+        var errorMessage = error.message;
+      });
+  }
+
+
   const fetchUser = () => {
     firebase.firestore()
     .collection("users")
@@ -57,11 +71,20 @@ const HomeScreen = (props) => {
     .then((snapshot) => {
       if (snapshot.exists) {
         const data = snapshot.data();
-        dispatch(getUser(data))
+        dispatch(login(data))
       } else {
         console.log('Does not exist!!')
+        dispatch(logout());
       }
     })
+  }
+  
+  const arrayComparer = (arrayToCompare) => {
+    return (current) => {
+      return arrayToCompare.filter((prev) => {
+        return prev.id == current.id
+      }).length == 0;
+    }
   }
 
   const fetchNotStarted = () => {
@@ -80,9 +103,9 @@ const HomeScreen = (props) => {
         delete doc.creation;
         return doc;
       });
-
+      let onlyInFirestore = deleteTimer.filter(arrayComparer(notStartedRedux));
       dispatch(
-        getNotStarted(deleteTimer)
+        getNotStarted(onlyInFirestore)
       );
     })
   }
@@ -103,9 +126,9 @@ const HomeScreen = (props) => {
         delete doc.creation;
         return doc;
       });
-
+      let onlyInFirestore = deleteTimer.filter(arrayComparer(inProgressRedux));
       dispatch(
-        getInProgress(deleteTimer)
+        getInProgress(onlyInFirestore)
       )
     })
   }
@@ -126,10 +149,10 @@ const HomeScreen = (props) => {
         delete doc.creation;
         return doc;
       });
-
+      let onlyInFirestore = deleteTimer.filter(arrayComparer(completedRedux));
       dispatch(
-        getCompleted(deleteTimer)
-      );
+        getCompleted(onlyInFirestore)
+      )
     })
   }
 
@@ -139,10 +162,12 @@ const HomeScreen = (props) => {
     fetchInProgress();
     fetchCompleted();
 
+    // manageSession()
+
   }, [dispatch])
 
-
-  if (!currentUser || (currentUser == undefined)) {
+  if (!user || user == undefined) {
+    console.log('NOT logged in')
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <Text style={{ color: purple, fontSize: 20 }}>Loading...</Text>
@@ -150,10 +175,13 @@ const HomeScreen = (props) => {
     )
   }
 
+  const { name } = user;
+
+  console.log('is logged in')
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.boxOne}>
-        <Text style={[styles.boldText, {fontSize: 18}]}>Good evening {currentUser.name}</Text>
+        <Text style={[styles.boldText, {fontSize: 18}]}>Good evening {name}</Text>
         <Text>Glad to have you here, we are ready to help you report an issue.</Text>
         <Pressable style={styles.btn}
           onPress={() => props.navigation.push("Report an Issue")} >
@@ -173,7 +201,7 @@ const HomeScreen = (props) => {
                 color={purple_70}
                 size={24} />
             </View>
-            <Text>{completed.length}</Text>
+            <Text>{completedRedux.length}</Text>
             <Text>Completed</Text>
           </View>
           <View style={styles.reportsStats}>
@@ -183,7 +211,7 @@ const HomeScreen = (props) => {
                 color={purple_70}
                 size={24} />
             </View>
-            <Text>{inProgress.length}</Text>
+            <Text>{inProgressRedux.length}</Text>
             <Text>In progress</Text>
           </View>
           <View style={styles.reportsStats}>
@@ -193,7 +221,7 @@ const HomeScreen = (props) => {
                 color={purple_70}
                 size={24} />
             </View>
-            <Text>{notStarted.length}</Text>
+            <Text>{notStartedRedux.length}</Text>
             <Text>Not started</Text>
           </View>
         </View>
@@ -345,5 +373,15 @@ export default HomeScreen;
 
 
 
-
+// firebase.auth().onAuthStateChanged((user) => {
+//   if (user) {
+//     // User is signed in, see docs for a list of available properties
+//     // https://firebase.google.com/docs/reference/js/firebase.User
+//     var uid = user.uid;
+//     // ...
+//   } else {
+//     // User is signed out
+//     // ...
+//   }
+// });
 
