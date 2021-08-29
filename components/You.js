@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity, Platform, Pressable } from "react-native";
+import { View, Text, StyleSheet, Image, Pressable } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "react-native-vector-icons";
@@ -72,6 +72,20 @@ const You = (props) => {
       })
   }
 
+  const onDeleteUser = () => {
+    
+    // const user = firebase.auth().currentUser;
+
+    // user.delete().then(() => {
+    //   console.log('Your account has been deleted!!');
+    //     dispatch(logout())
+    //     // schedulePushNotification(name);
+    // }).catch((error) => {
+    //   console.log('An error ocurred: ', error)
+    //   // ...
+    // });
+  }
+
   
   return (
     <SafeAreaView style={styles.container}>
@@ -141,6 +155,20 @@ const You = (props) => {
           onPress={onSignOut} 
         >
           Sign Out
+        </Text>
+      </View>
+      <View style={styles.signOut}>
+        <MaterialCommunityIcons
+          name="logout"
+          size={18}
+          color={red}
+          style={{paddingRight: 12}}
+        />
+        <Text 
+          style={[styles.boldText, {color: red}]} 
+          onPress={onSignOut} 
+        >
+          Delete account
         </Text>
       </View>
     </SafeAreaView>

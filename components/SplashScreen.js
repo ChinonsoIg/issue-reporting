@@ -1,18 +1,17 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { purple, white, goldenRod, purple_95, purple_80, bgSecondary, darkerPurple, purple_70 } from "../utils/colours";
-
+import { purple, darkPurple } from "../utils/colours";
 
 const SplashScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-        <Text style={styles.boldText}>Splash screen</Text>
-        <Text>App loading</Text>
+        <Text style={styles.boldText}>issue</Text>
+        <Text style={{ color: darkPurple }}>Report issues</Text>
       </View>
     </SafeAreaView>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -22,7 +21,10 @@ const styles = StyleSheet.create({
   },
   boldText: {
     fontWeight: 'bold',
-    color: darkerPurple,
+    fontStyle: 'italic',
+    fontFamily: 'lucida grande',
+    fontSize: 35,
+    color: purple,
   }
 })
 

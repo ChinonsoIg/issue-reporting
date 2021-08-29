@@ -49,47 +49,44 @@ const ReportIssue = (props) => {
     } else {
       console.log('you are good to go');
       
-    const response = await fetch(props.route.params?.pictureURI);
-    const blob = await response.blob();
-    const childPath = `issue/${firebase.auth().currentUser.uid}/${Math.random().toString(36)}`
+      const response = await fetch(props.route.params?.pictureURI);
+      const blob = await response.blob();
+      const childPath = `issue/${firebase.auth().currentUser.uid}/${Math.random().toString(36)}`
 
-    const task = firebase
-      .storage()
-      .ref()
-      .child(childPath)
-      .put(blob);
+      const task = firebase
+        .storage()
+        .ref()
+        .child(childPath)
+        .put(blob);
 
-    const taskProgress = (snapshot) => {
-      console.log('Transferred: ', snapshot.bytesTransferred)
+      const taskProgress = (snapshot) => {
+        console.log('Transferred: ', snapshot.bytesTransferred)
+      }
+      
+      const taskCompleted = () => {
+        task.snapshot.ref.getDownloadURL()
+          .then((snapshot) => {
+            savePostData(snapshot)
+            console.log('snap ',snapshot);
+            console.log('Done')
+          })
+      }
+
+      const taskError = (snapshot) => {
+        console.log('Error: ', snapshot)
+      }
+
+      task.on("state_changed", taskProgress, taskError, taskCompleted)
+      props.navigation.navigate("ReportIssueSuccess");
+
     }
-    
-    const taskCompleted = () => {
-      task.snapshot.ref.getDownloadURL()
-        .then((snapshot) => {
-          savePostData(snapshot)
-          console.log('snap ',snapshot);
-          console.log('Done')
-        })
-    }
-
-    const taskError = (snapshot) => {
-      console.log('Error: ', snapshot)
-    }
-
-    task.on("state_changed", taskProgress, taskError, taskCompleted)
-    props.navigation.navigate("ReportIssueSuccess");
   }
 
-  }
-
-  // console.log(addNotStarted);
   const savePostData = (downloadURL) => {
-    // const dispatch = useDispatch();
-    // const addNotStarted = addNotStarted;
-    console.log(addNotStarted);
+    
     const { name, userId } = user;
     const word = removeWhitespace(title);
-    const issueId = generateId(word, 'asdfwxyz');
+    const issueId = generateId(word, 'asdftyuiwxyz');
 
     firebase.firestore().collection("issues").doc()
       .set({
@@ -116,7 +113,8 @@ const ReportIssue = (props) => {
           reporterUserId: userId,
           isNotStarted: true,
           creation: firebase.firestore.FieldValue.serverTimestamp()
-        })
+        });
+        
         dispatch(
           addNotStarted({
             issueId,
@@ -130,7 +128,11 @@ const ReportIssue = (props) => {
             isNotStarted: true,
           })
         );
+        
       })
+      .catch((error) => {
+        console.error("Error writing document: ", error);
+      });
   }
   
 

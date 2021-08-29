@@ -1,10 +1,9 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect } from "react";
 import { View, Text, StyleSheet, Pressable, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { MaterialCommunityIcons, Ionicons } from "react-native-vector-icons";
 import { purple, white, goldenRod, purple_95, purple_80, bgSecondary, darkerPurple, purple_70 } from "../utils/colours";
-import { removeWhitespace } from "../utils/helpers";
 
 // For redux
 import firebase from "firebase";
@@ -13,6 +12,7 @@ import { login, isLoggedIn, currentUser, logout} from "../redux/slices/userSlice
 import { getNotStarted } from "../redux/slices/notStartedSlice";
 import { getInProgress } from "../redux/slices/inProgressSlice";
 import { getCompleted } from "../redux/slices/completedSlice";
+import { TouchableOpacity } from "react-native";
 
 
 const HomeScreen = (props) => {
@@ -44,6 +44,12 @@ const HomeScreen = (props) => {
     }
     return null
   });
+
+  const completeByMyTeam = () => {
+    const data =  completedRedux.filter(myTeam => myTeam.department === user.department).length;
+    // console.log(data)
+    return data
+  }
 
   const manageSession = () => {
     firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
@@ -167,7 +173,6 @@ const HomeScreen = (props) => {
   }, [dispatch])
 
   if (!user || user == undefined) {
-    console.log('NOT logged in')
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <Text style={{ color: purple, fontSize: 20 }}>Loading...</Text>
@@ -177,21 +182,21 @@ const HomeScreen = (props) => {
 
   const { name } = user;
 
-  console.log('is logged in')
+  console.log('cmpbymyteam', completeByMyTeam())
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.boxOne}>
         <Text style={[styles.boldText, {fontSize: 18}]}>Good evening {name}</Text>
         <Text>Glad to have you here, we are ready to help you report an issue.</Text>
-        <Pressable style={styles.btn}
+        <TouchableOpacity style={styles.btn}
           onPress={() => props.navigation.push("Report an Issue")} >
           <Text style={styles.btnText}>Report an issue</Text>
-        </Pressable>
+        </TouchableOpacity>
       </View>
       <View style={styles.boxTwo}>
         <Text 
           style={[styles.boldText, {flex: 1}]}>
-            Issues reported by you
+            Issues timeline
         </Text>
         <View style={styles.reportsByYou}>
           <View style={styles.reportsStats}>
@@ -240,7 +245,7 @@ const HomeScreen = (props) => {
           <View style={{flex: 1, flexDirection: 'row'}}>
             <MaterialCommunityIcons name="medal" size={22} color={goldenRod}
             style={{paddingRight: 10}} />
-            <Text>Your team has completed <Text style={styles.boldText}>4</Text> issue
+            <Text>Your team has completed <Text style={styles.boldText}>{completeByMyTeam()}</Text> issue
               </Text>
           </View>
           <View style={{flex: 1, flexDirection: 'row'}}>
@@ -270,10 +275,6 @@ const HomeScreen = (props) => {
     </SafeAreaView>
   )
 }
-
-
-
-
 
 
 
@@ -368,20 +369,3 @@ const styles = StyleSheet.create({
 
 
 export default HomeScreen;
-
-
-
-
-
-// firebase.auth().onAuthStateChanged((user) => {
-//   if (user) {
-//     // User is signed in, see docs for a list of available properties
-//     // https://firebase.google.com/docs/reference/js/firebase.User
-//     var uid = user.uid;
-//     // ...
-//   } else {
-//     // User is signed out
-//     // ...
-//   }
-// });
-

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet } from "react-native";
-import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { NavigationContainer } from '@react-navigation/native';
 
@@ -9,17 +8,29 @@ import TabNavigator from "./components/navigation/TabNavigator";
 import AuthNavigator from "./components/navigation/AuthNavigator";
 import SplashScreen from "./components/SplashScreen";
 
-// For redux
+// For redux and storage
+import firebase from "firebase/app";
 import { Provider } from "react-redux";
 import { store } from "./redux/store";
-// import { createStore, applyMiddleware } from "redux";
-// import thunk from "redux-thunk";
-// import reducer from "./redux/reducer";
-// const store = createStore(reducer, applyMiddleware(thunk))
+import {
+  REACT_APP_API_KEY,
+  REACT_APP_AUTH_DOMAIN,
+  REACT_APP_DATABASE_URL,
+  REACT_APP_PROJECT_ID,
+  REACT_APP_STORAGE_BUCKET,
+  REACT_APP_MESSAGING_SENDER_ID,  
+  REACT_APP_APP_ID
+ } from "@env";
 
-
-import firebase from "firebase/app";
-
+const firebaseConfig = {
+  apiKey: REACT_APP_API_KEY,
+  authDomain: REACT_APP_AUTH_DOMAIN,
+  databaseURL: REACT_APP_DATABASE_URL,
+  projectId: REACT_APP_PROJECT_ID,
+  storageBucket: REACT_APP_STORAGE_BUCKET,
+  messagingSenderId: REACT_APP_MESSAGING_SENDER_ID,
+  appId: REACT_APP_APP_ID
+};
 
 // This checks that no other instance of firebase is running
 if (firebase.apps.length === 0) {
@@ -31,6 +42,7 @@ const App = () => {
   
   const [isLoading, setIsLoading] = useState(true);
   const [loggedIn, setLoggedIn] = useState(false);
+
 
   useEffect(() => {
 
@@ -47,10 +59,7 @@ const App = () => {
 
   }, [loggedIn])
 
-
   if (isLoading) {
-    console.log('loading')
-    console.log('log in: APP', loggedIn)
     return (
       <SafeAreaProvider style={styles.container}>
         <SplashScreen />
@@ -58,8 +67,6 @@ const App = () => {
     )
   }
 
-  console.log('loaded')
-  console.log('log in: APP', loggedIn)
   return (
     <Provider store={store}>
       {
