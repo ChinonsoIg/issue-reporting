@@ -18,10 +18,10 @@ Notifications.setNotificationHandler({
   }),
 });
 
-async function schedulePushNotification(name) {
+async function schedulePushNotification() {
   await Notifications.scheduleNotificationAsync({
     content: {
-      title: `${name} Welcome back`,
+      title: `Welcome back`,
       body: "You're signed in!",
       // data: { data: 'goes here njj hjjj' },
     },
@@ -42,7 +42,7 @@ const SignIn = ({ navigation }) => {
       firebase.auth().signInWithEmailAndPassword(email, password)
       .then((result) => {
         console.log('signin: ',result);
-        // schedulePushNotification(user.name);
+        schedulePushNotification();
       })
       .catch((error) => {
         switch (error.code) {

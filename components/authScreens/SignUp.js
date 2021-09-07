@@ -2,12 +2,35 @@ import React, { useState } from "react";
 import { View, Text, TextInput, StyleSheet, Pressable, TouchableHighlight, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import DropDownPicker from "react-native-dropdown-picker";
+import * as Notifications from 'expo-notifications';
+
 import { purple, white, purple_95, purple_80, darkPurple, purple_40, black } from "../../utils/colours";
 import signInImage from "../../image/work_together.png";
 import { dept } from "../../utils/api";
 import { generateId } from "../../utils/helpers";
 
 import firebase from "firebase";
+
+// For notifications
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
+
+async function schedulePushNotification() {
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      title: `Welcome to our platform`,
+      body: "You're successfully signed up!!",
+      // data: { data: 'goes here njj hjjj' },
+    },
+    trigger: { seconds: 2 },
+  });
+}
+
 
 const SignUp = () => {
   const [name, setName] = useState("");
@@ -20,6 +43,7 @@ const SignUp = () => {
   const [department, setDepartment] = useState(null);
   const [depts, setDepts] = useState(dept);
 
+  
   const onSignUp = () => {
     const firstname = name.split(" ")[0];
     const lastname = name.split(" ")[1];
@@ -51,7 +75,8 @@ const SignUp = () => {
               department,
               userId
             })
-          console.log('result: ', result)
+          console.log('result: ', result);
+          schedulePushNotification();
         })
         .catch((error) => {
           console.error('error: ', error)

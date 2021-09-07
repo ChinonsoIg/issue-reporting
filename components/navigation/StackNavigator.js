@@ -4,7 +4,6 @@ import { createStackNavigator } from "@react-navigation/stack";
 import ReportIssue from "../ReportIssue";
 import Issues from "../Issues";
 import Task from "../Task";
-import ReportIssueSuccess from "../ReportIssueSuccess";
 import TermsAndConditions from "../help/TermsAndConditions";
 import ContactUs from "../help/ContactUs";
 import Faq from "../help/Faq";
@@ -32,7 +31,6 @@ const HomeStackNavigator = () => {
       <Stack.Screen name="Issues" component={Issues} options={{headerTitleAlign: "center"}} />
       <Stack.Screen name="Report an Issue" component={ReportIssue} options={{headerTitleAlign: "center"}} />
       <Stack.Screen name="CameraScreen" component={CameraScreen} options={{headerTitleAlign: "center"}} />
-      <Stack.Screen name="ReportIssueSuccess" component={ReportIssueSuccess} options={{headerShown: false}} />
       <Stack.Screen name="Task" component={Task} options={{headerTitleAlign: "center"}} />
     </Stack.Navigator>
   );

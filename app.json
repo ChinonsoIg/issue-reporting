@@ -4,9 +4,9 @@
     "slug": "issue-reporting",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/logo1.png",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/logo1.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -21,9 +21,10 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/logo1.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "package": "issue.reporting"
     },
     "web": {
       "favicon": "./assets/favicon.png"

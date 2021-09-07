@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, Image, Pressable } from "react-native";
+import { View, Text, StyleSheet, Image, Pressable, Modal } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "react-native-vector-icons";
 import * as Notifications from 'expo-notifications';
 
-import { bgSecondary, darkPurple, white, purple_80, red, darkerPurple } from "../utils/colours";
+import { bgSecondary, darkPurple, white, purple_80, purple_95, red, darkerPurple, purple } from "../utils/colours";
+import { convertToUppercase } from "../utils/helpers";
 import logo from "../assets/logo.png";
 
 // For redux
@@ -23,10 +24,10 @@ Notifications.setNotificationHandler({
   }),
 });
 
-async function schedulePushNotification(title) {
+async function schedulePushNotification(name) {
   await Notifications.scheduleNotificationAsync({
     content: {
-      title,
+      title: `$Thank you ${name}`,
       body: `You're signed out!`,
       data: { data: 'goes here' },
     },
@@ -36,12 +37,13 @@ async function schedulePushNotification(title) {
 
 
 const You = (props) => {
-
   const dispatch = useDispatch()
   
   const user = useSelector(currentUser);
 
-  const { name, department } = user
+  const { name, department } = user;
+
+  const [modalVisible, setModalVisible] = useState(false)
 
   const [selectedImage, setSelectedImage] = useState(null)
   let openImagePickerAsync = async () => {
@@ -68,15 +70,16 @@ const You = (props) => {
       .then(() => {
         console.log('User signed out');
         dispatch(logout())
-        // schedulePushNotification(firstname);
+        schedulePushNotification(convertToUppercase(firstname));
       })
   }
 
   const onDeleteUser = () => {
-    
-    // const user = firebase.auth().currentUser;
+    console.log('user deleted');
+    setModalVisible(!modalVisible);
+    // const userAccount = firebase.auth().currentUser;
 
-    // user.delete().then(() => {
+    // userAccount.delete().then(() => {
     //   console.log('Your account has been deleted!!');
     //     dispatch(logout())
     //     // schedulePushNotification(name);
@@ -89,25 +92,62 @@ const You = (props) => {
   
   return (
     <SafeAreaView style={styles.container}>
+
+      {/* My Modal box */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          Alert.alert("Modal has been closed.");
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={[styles.modalText, styles.bigFont]}>Are you sure? This action cannot be undone!</Text>
+            <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
+              <Pressable
+                style={[styles.button, styles.buttonYes]}
+                onPress={() => onDeleteUser()}
+              >
+                <Text style={styles.textStyle}>Yes</Text>
+              </Pressable>
+
+              <Pressable
+                style={[styles.button, styles.buttonNo]}
+                onPress={() => setModalVisible(!modalVisible)}
+              >
+                <Text style={styles.textStyle}>Cancel</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
+      
+      
       <View style={{justifyContent: 'center', alignItems: 'center', marginVertical: 5}}>
         <Image source={logo} style={styles.profilePic} />
         <Text style={{fontWeight: 'bold', color: darkerPurple}}>{name}</Text>
-        <Text>Department: {department}</Text>
+        <Text>Department: {convertToUppercase(department)}</Text>
       </View>
-      
-      <View style={{marginVertical: 12}}>
+
+        {/* TODO: List archived issues here */}
+      {/* <View style={{marginVertical: 12}}>
         <Text style={styles.boldText}>
           Archived Issues
         </Text>
         <View style={{backgroundColor: white, paddingVertical: 8}}>
           <Text>List archived issues here</Text>
         </View>
-      </View>
+      </View> */}
+      
       <View style={{marginVertical: 12}}>
         <Text style={styles.boldText}>
           Help
         </Text>
         <View style={{backgroundColor: white, paddingVertical: 10}}>
+          {/* {showBox && <View style={styles.box}></View>} */}
           <View style={styles.helpItem}>
             <MaterialCommunityIcons
               name="card-account-phone"
@@ -143,6 +183,7 @@ const You = (props) => {
           </View>
         </View>
       </View>
+      
       <View style={styles.signOut}>
         <MaterialCommunityIcons
           name="logout"
@@ -157,20 +198,22 @@ const You = (props) => {
           Sign Out
         </Text>
       </View>
+      
       <View style={styles.signOut}>
         <MaterialCommunityIcons
-          name="logout"
+          name="delete"
           size={18}
           color={red}
           style={{paddingRight: 12}}
         />
         <Text 
           style={[styles.boldText, {color: red}]} 
-          onPress={onSignOut} 
+          onPress={() => setModalVisible(true)} 
         >
           Delete account
         </Text>
       </View>
+    
     </SafeAreaView>
   );
 }
@@ -205,6 +248,58 @@ const styles = StyleSheet.create({
     backgroundColor: white,
     marginTop: 15,
     paddingVertical: 5,
+  },
+
+
+  // For Modal
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: purple_95,
+    borderRadius: 20,
+    padding: 35,
+    // alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+    marginTop: 25,
+    width: 100
+  },
+  buttonNo: {
+    backgroundColor: purple,
+  },
+  buttonYes: {
+    backgroundColor: red,
+  },
+  textStyle: {
+    color: white,
+    fontWeight: "bold",
+    textAlign: "center"
+  },
+  modalText: {
+    marginBottom: 45,
+    textAlign: "center",
+    color: darkerPurple,
+    fontSize: 16
+  },
+  bigFont: {
+    fontSize: 25,
+    color: darkerPurple,
   }
 })
 

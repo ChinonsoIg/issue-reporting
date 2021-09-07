@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, Image, Button, TextInput, Keyboard, KeyboardAvoidingView, TouchableWithoutFeedback, TouchableOpacity, Platform, Alert } from "react-native";
+import { View, Text, StyleSheet, Image, Button, TextInput, Keyboard, KeyboardAvoidingView, TouchableWithoutFeedback, TouchableOpacity, Platform, Alert, Modal, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import DropDownPicker from "react-native-dropdown-picker";
-import firebase from "firebase/app";
+import { Ionicons } from "react-native-vector-icons";
 
 import { bgSecondary, darkerPurple, white, purple, purple_80, purple_40, purple_95, purple_70 } from "../utils/colours";
 import { dept, loc } from "../utils/api";
 import { generateId, removeWhitespace } from "../utils/helpers";
 
 // For redux
+import firebase from "firebase/app";
 import { useDispatch, useSelector } from "react-redux";
 import { currentUser} from "../redux/slices/userSlice";
 import { addNotStarted } from "../redux/slices/notStartedSlice";
@@ -18,6 +19,7 @@ import { addNotStarted } from "../redux/slices/notStartedSlice";
 const ReportIssue = (props) => {
   const dispatch = useDispatch();
   const user = useSelector(currentUser);
+  const [modalVisible, setModalVisible] = useState(false);
 
   // For issue title
   const [title, setTitle] = useState("");
@@ -41,8 +43,16 @@ const ReportIssue = (props) => {
     }
 
   }, [props.route.params?.pictureURI]);
+
+
+  // For notification
+  // const messaging = firebase.messaging();
+  // messaging.getToken({vapidKey: "BEwNLZryLtodn3Yh84PuAxfz0mPpHNUyNoVwE__FXDnVj9Rv7mo54VtU3SaLQDZBb-dXS0QvZA7KgTlaA4k-lLQ"});
+
   
   const uploadImage = async() => {
+    // console.log('in modal');
+    setModalVisible(!modalVisible);
     if ((title === null) || (department === null) || (location === null) || (description === null)) {
       console.log('No field should be empty');
       Alert.alert('No field should be empty!');
@@ -77,7 +87,8 @@ const ReportIssue = (props) => {
       }
 
       task.on("state_changed", taskProgress, taskError, taskCompleted)
-      props.navigation.navigate("ReportIssueSuccess");
+      // props.navigation.navigate("ReportIssueSuccess");
+      setModalVisible(!modalVisible);
 
     }
   }
@@ -133,9 +144,37 @@ const ReportIssue = (props) => {
       .catch((error) => {
         console.error("Error writing document: ", error);
       });
+
+    
+    firebase.firestore().collection("notifications").doc()
+      .set({
+        issueId,
+        title,
+        department,
+        reportedBy: name,
+        reporterUserId: userId,
+        creation: firebase.firestore.FieldValue.serverTimestamp()
+      })
+      .then(() => {
+        console.log('items: ',{
+          issueId,
+          title,
+          department,
+          reportedBy: name,
+          reporterUserId: userId,
+          creation: firebase.firestore.FieldValue.serverTimestamp()
+        });
+                
+      })
+      .catch((error) => {
+        console.error("Error writing notification: ", error);
+      });
   }
   
-
+  const navigateToHome = () => {
+    setModalVisible(!modalVisible)
+    props.navigation.navigate("Home");
+  }
   
 
   return (
@@ -143,6 +182,46 @@ const ReportIssue = (props) => {
       <KeyboardAvoidingView
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'} >
+        
+        
+        {/* My Modal box */}
+        <Modal
+          animationType="slide"
+          transparent={false}
+          visible={modalVisible}
+          onDismiss={navigateToHome}
+          onRequestClose={() => {
+            Alert.alert("Modal has been closed.");
+            setModalVisible(!modalVisible);
+          }}
+        >
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <View style={{ alignItems: 'center', marginBottom: 45 }} >
+                <Ionicons
+                  name={Platform.OS === "ios"
+                    ? "ios-checkmark-circle"
+                    : "md-checkmark-circle"
+                  }
+                  size={100}
+                  color={purple}
+                />
+                <Text style={styles.bigFont}>Thanks</Text>
+                <Text style={{textAlign: 'center'}}>
+                  Your issue has been reported successfully!!
+                </Text>
+              </View>
+              <Pressable
+                style={[styles.button, styles.buttonClose]}
+                onPress={() => navigateToHome()}
+              >
+                <Text style={styles.textStyle}>Go to home</Text>
+              </Pressable>
+            </View>
+          </View>
+        </Modal>
+
+
         <TouchableWithoutFeedback
           onPress={Keyboard.dismiss} >
           <View style={{flex: 1, justifyContent: 'space-around'}}>
@@ -256,6 +335,10 @@ const styles = StyleSheet.create({
     marginTop: 6,
     textAlign: 'center'
   },
+  bigFont: {
+    fontSize: 25,
+    color: darkerPurple,
+  },
   btn: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -295,6 +378,50 @@ const styles = StyleSheet.create({
     letterSpacing: 0.25,
     color: purple_70,
   },
+
+
+  // For Modal
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: purple_95,
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+    // marginTop: 25,
+    // width: 100
+  },
+  buttonClose: {
+    backgroundColor: purple,
+  },
+  textStyle: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center"
+  },
+  modalText: {
+    marginBottom: 25,
+    textAlign: "center",
+    fontSize: 16
+  }
 })
 
 

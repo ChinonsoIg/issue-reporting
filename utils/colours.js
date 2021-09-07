@@ -17,8 +17,3 @@ export const green = "#008000";
 
 export const bgSecondary = "rgba(255, 230, 255, 0.3)";
 export const bgPrimary = "rgba(255, 230, 255)"
-
-
-// export const teal = "#008080";
-// darktTeal = "#003333";
-// lightTeal = "#00cccc";

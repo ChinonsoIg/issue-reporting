@@ -3,6 +3,7 @@ import { View, Text, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { purple, darkPurple } from "../utils/colours";
 
+
 const SplashScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
@@ -22,7 +23,7 @@ const styles = StyleSheet.create({
   boldText: {
     fontWeight: 'bold',
     fontStyle: 'italic',
-    fontFamily: 'lucida grande',
+    // fontFamily: 'lucida grande',
     fontSize: 35,
     color: purple,
   }

@@ -2,7 +2,9 @@ import React, { useEffect } from "react";
 import { View, Text, StyleSheet, Pressable, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { useFonts, Roboto_400Regular, OpenSans_400Regular } from '@expo-google-fonts/dev';
 import { MaterialCommunityIcons, Ionicons } from "react-native-vector-icons";
+import { getTime } from "../utils/helpers";
 import { purple, white, goldenRod, purple_95, purple_80, bgSecondary, darkerPurple, purple_70 } from "../utils/colours";
 
 // For redux
@@ -16,6 +18,12 @@ import { TouchableOpacity } from "react-native";
 
 
 const HomeScreen = (props) => {
+
+  let [fontsLoaded] = useFonts({
+    Roboto_400Regular,
+    OpenSans_400Regular
+  });
+
   const dispatch = useDispatch();
   const loggedIn = useSelector(isLoggedIn);
   const user = useSelector(currentUser);
@@ -182,11 +190,17 @@ const HomeScreen = (props) => {
 
   const { name } = user;
 
-  console.log('cmpbymyteam', completeByMyTeam())
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.boxOne}>
-        <Text style={[styles.boldText, {fontSize: 18}]}>Good evening {name}</Text>
+        <Text 
+          style={
+            [styles.boldText, 
+            // {fontFamily: fontsLoaded ? "Roboto_400Regular" : null}, 
+            {fontSize: 18}]}
+        >
+          Good {getTime()}, {name}
+        </Text>
         <Text>Glad to have you here, we are ready to help you report an issue.</Text>
         <TouchableOpacity style={styles.btn}
           onPress={() => props.navigation.push("Report an Issue")} >
