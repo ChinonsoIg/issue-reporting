@@ -1,19 +1,21 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, Image, Pressable, Modal } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, StyleSheet, Image, Pressable, Modal, Platform, ScrollView } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { MaterialCommunityIcons } from "react-native-vector-icons";
+import { MaterialCommunityIcons, Ionicons } from "react-native-vector-icons";
 import * as Notifications from 'expo-notifications';
+import { Camera } from 'expo-camera';
+import { Avatar, ListItem } from 'react-native-elements';
 
-import { bgSecondary, darkPurple, white, purple_80, purple_95, red, darkerPurple, purple } from "../utils/colours";
-import { convertToUppercase } from "../utils/helpers";
+
+import { bgSecondary, darkPurple, white, purple_70, purple_80, purple_95, red, darkerPurple, purple } from "../utils/colours";
+import { convertToUppercase, extractInitials } from "../utils/helpers";
 import logo from "../assets/logo.png";
 
 // For redux
 import firebase from "firebase";
 import { useSelector, useDispatch } from "react-redux";
-import { logout, currentUser } from "../redux/slices/userSlice";
-
+import { logout, currentUser, login } from "../redux/slices/userSlice";
 
 // For notifications
 Notifications.setNotificationHandler({
@@ -27,7 +29,7 @@ Notifications.setNotificationHandler({
 async function schedulePushNotification(name) {
   await Notifications.scheduleNotificationAsync({
     content: {
-      title: `$Thank you ${name}`,
+      title: `Thank you ${name}`,
       body: `You're signed out!`,
       data: { data: 'goes here' },
     },
@@ -41,11 +43,13 @@ const You = (props) => {
   
   const user = useSelector(currentUser);
 
-  const { name, department } = user;
+  const { name, department, photoURL } = user;
 
   const [modalVisible, setModalVisible] = useState(false)
 
   const [selectedImage, setSelectedImage] = useState(null)
+  
+  
   let openImagePickerAsync = async () => {
     let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
@@ -60,35 +64,96 @@ const You = (props) => {
       return;
     }
 
-    setSelectedImage({ localUri: pickerResult.uri });
+    setSelectedImage(pickerResult.uri);
   }
+
+  const uploadProfilePicture = async() => {
+    // console.log('in modal');
+    if (selectedImage == null) {
+      return null;
+    } else {
+      const response = await fetch(selectedImage);
+      console.log(response)
+      const blob = await response.blob();
+      const childPath = `profilePicture/${firebase.auth().currentUser.uid}/${Math.random().toString(36)}`
+
+      const task = firebase
+        .storage()
+        .ref()
+        .child(childPath)
+        .put(blob);
+
+      const taskProgress = (snapshot) => {
+        console.log('Transferred: ', snapshot.bytesTransferred)
+      }
+      
+      const taskCompleted = () => {
+        task.snapshot.ref.getDownloadURL()
+          .then((snapshot) => {
+            console.log('snap ',snapshot);
+            console.log('Done')  
+            saveProfilePicture(snapshot)
+          })
+      }
+
+      const taskError = (snapshot) => {
+        console.log('Error: ', snapshot)
+      }
+
+      task.on("state_changed", taskProgress, taskError, taskCompleted)
+      }
+    
+  }
+
+  const saveProfilePicture = (profilePictureURL) => {
+
+    return firebase.firestore()
+      .collection("users")
+      .doc(firebase.auth().currentUser.uid)
+      .update({
+        photoURL: profilePictureURL
+      })
+      .then(() => {
+        dispatch(login({
+          photoURL: profilePictureURL
+        }))
+      })
+      .catch((error) => console.error("Error: ", error));
+
+  }
+
+
+  useEffect(() => {
+    uploadProfilePicture();
+
+  }, [selectedImage])
   
+
   const onSignOut = () => {
-    const firstname = name.split(' ')[0];
+    // const firstname = name.split(' ')[0];
   
     firebase.auth().signOut()
       .then(() => {
         console.log('User signed out');
         dispatch(logout())
-        schedulePushNotification(convertToUppercase(firstname));
+      //   schedulePushNotification(convertToUppercase(firstname));
       })
   }
 
   const onDeleteUser = () => {
     console.log('user deleted');
     setModalVisible(!modalVisible);
-    // const userAccount = firebase.auth().currentUser;
+    const userAccount = firebase.auth().currentUser;
 
-    // userAccount.delete().then(() => {
-    //   console.log('Your account has been deleted!!');
-    //     dispatch(logout())
-    //     // schedulePushNotification(name);
-    // }).catch((error) => {
-    //   console.log('An error ocurred: ', error)
-    //   // ...
-    // });
+    userAccount.delete().then(() => {
+      console.log('Your account has been deleted!!');
+      dispatch(logout())
+      // schedulePushNotification(name);
+    }).catch((error) => {
+      console.log('An error ocurred: ', error)
+      // ...
+    });
   }
-
   
   return (
     <SafeAreaView style={styles.container}>
@@ -125,95 +190,117 @@ const You = (props) => {
         </View>
       </Modal>
       
-      
-      <View style={{justifyContent: 'center', alignItems: 'center', marginVertical: 5}}>
-        <Image source={logo} style={styles.profilePic} />
-        <Text style={{fontWeight: 'bold', color: darkerPurple}}>{name}</Text>
-        <Text>Department: {convertToUppercase(department)}</Text>
-      </View>
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }} >
 
-        {/* TODO: List archived issues here */}
-      {/* <View style={{marginVertical: 12}}>
-        <Text style={styles.boldText}>
-          Archived Issues
-        </Text>
-        <View style={{backgroundColor: white, paddingVertical: 8}}>
-          <Text>List archived issues here</Text>
-        </View>
-      </View> */}
-      
-      <View style={{marginVertical: 12}}>
-        <Text style={styles.boldText}>
-          Help
-        </Text>
-        <View style={{backgroundColor: white, paddingVertical: 10}}>
-          {/* {showBox && <View style={styles.box}></View>} */}
-          <View style={styles.helpItem}>
-            <MaterialCommunityIcons
-              name="card-account-phone"
-              size={18}
-              color={purple_80}
-              style={{paddingRight: 12}}
+        <View style={{justifyContent: 'center', alignItems: 'center', marginVertical: 5}}>
+          <View style={{borderColor: purple, borderRadius: 4}}>
+            <Avatar
+              rounded
+              size="xlarge"
+              title={extractInitials(name)}
+              activeOpacity={0.7}
+              source={{ 
+                uri: photoURL
+              }}
+              titleStyle={{color: darkPurple}}
+              containerStyle={{
+                backgroundColor: "silver",
+              }}
             />
-            <Pressable onPress={() => navigation.navigate("Contact Us")}>
-              <Text>Contact us</Text>
-            </Pressable>
+           
+            <Ionicons
+              name={
+                Platform.OS === 'ios'
+                  ? 'ios-camera'
+                  : 'md-camera'
+              }
+              color={purple_70}
+              size={26}
+              style={styles.icon}
+              onPress={() =>
+                openImagePickerAsync()
+              }
+            />
           </View>
-          <View style={styles.helpItem}>
-            <MaterialCommunityIcons
-              name="comment-question"
-              size={18}
-              color={purple_80}
-              style={{paddingRight: 12}}
-            />
-            <Pressable onPress={() => navigation.navigate("Faq")}>
-              <Text>Faq</Text>
-            </Pressable>
-          </View>
-          <View style={styles.helpItem}>
-            <MaterialCommunityIcons
-              name="file-document-outline"
-              size={18}
-              color={purple_80}
-              style={{paddingRight: 12}}
-            />
-            <Pressable onPress={() => navigation.navigate("Terms and Conditions")}>
-              <Text>Terms &#38; conditions</Text>
-            </Pressable>
+          <View style={{ justifyContent: 'center', alignItems: 'center', marginTop: 5 }}>
+            <Text style={{fontWeight: 'bold', color: darkerPurple}}>{name}</Text>
+            <Text>Department: {convertToUppercase(department)}</Text>
           </View>
         </View>
-      </View>
-      
-      <View style={styles.signOut}>
-        <MaterialCommunityIcons
-          name="logout"
-          size={18}
-          color={red}
-          style={{paddingRight: 12}}
-        />
-        <Text 
-          style={[styles.boldText, {color: red}]} 
-          onPress={onSignOut} 
-        >
-          Sign Out
-        </Text>
-      </View>
-      
-      <View style={styles.signOut}>
-        <MaterialCommunityIcons
-          name="delete"
-          size={18}
-          color={red}
-          style={{paddingRight: 12}}
-        />
-        <Text 
-          style={[styles.boldText, {color: red}]} 
-          onPress={() => setModalVisible(true)} 
-        >
-          Delete account
-        </Text>
-      </View>
+        
+        <View style={{marginVertical: 12}}>
+          <Text style={styles.boldText}>
+            Help
+          </Text>
+          <View style={{backgroundColor: white, paddingVertical: 10}}>
+            {/* {showBox && <View style={styles.box}></View>} */}
+            <View style={styles.helpItem}>
+              <MaterialCommunityIcons
+                name="card-account-phone"
+                size={18}
+                color={purple_80}
+                style={{paddingRight: 12}}
+              />
+              <Pressable onPress={() => navigation.navigate("Contact Us")}>
+                <Text>Contact us</Text>
+              </Pressable>
+            </View>
+            <View style={styles.helpItem}>
+              <MaterialCommunityIcons
+                name="comment-question"
+                size={18}
+                color={purple_80}
+                style={{paddingRight: 12}}
+              />
+              <Pressable onPress={() => navigation.navigate("Faq")}>
+                <Text>Faq</Text>
+              </Pressable>
+            </View>
+            <View style={styles.helpItem}>
+              <MaterialCommunityIcons
+                name="file-document-outline"
+                size={18}
+                color={purple_80}
+                style={{paddingRight: 12}}
+              />
+              <Pressable onPress={() => navigation.navigate("Terms and Conditions")}>
+                <Text>Terms &#38; conditions</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+        
+        <View style={styles.dangerZone}>
+          <MaterialCommunityIcons
+            name="logout"
+            size={18}
+            color={red}
+            style={{paddingRight: 12}}
+          />
+          <Text 
+            style={[styles.boldText, {color: red}]} 
+            onPress={onSignOut} 
+          >
+            Sign Out
+          </Text>
+        </View>
+        
+        <View style={styles.dangerZone}>
+          <MaterialCommunityIcons
+            name="delete"
+            size={18}
+            color={red}
+            style={{paddingRight: 12}}
+          />
+          <Text 
+            style={[styles.boldText, {color: red}]} 
+            onPress={() => setModalVisible(true)} 
+          >
+            Delete account
+          </Text>
+        </View>
     
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -232,6 +319,13 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
     borderRadius: 75,
   },
+  icon: {
+    // backgroundColor: '#ccc',
+    color: purple,
+    position: 'absolute',
+    right: 5,
+    bottom: 10
+  },
   boldText: {
     fontWeight: 'bold',
     color: darkPurple,
@@ -242,7 +336,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginVertical: 25,
   },
-  signOut: {
+  dangerZone: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: white,
@@ -300,7 +394,14 @@ const styles = StyleSheet.create({
   bigFont: {
     fontSize: 25,
     color: darkerPurple,
-  }
+  },
+
+
+  // For camera
+  cameraContainer: {
+    flex: 1,
+    flexDirection: 'row'
+  },
 })
 
 

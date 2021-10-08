@@ -5,7 +5,8 @@ export const notStartedSlice = createSlice({
   initialState: [],
   reducers: {
     getNotStarted: (state, action) => {
-      let spreadData = [...state,...action.payload];
+			// console.log('notstarted: ',action.payload);
+      let spreadData = [ ...action.payload ];
 			return spreadData;
 		},
 		addNotStarted: (state, action) => {
@@ -14,8 +15,12 @@ export const notStartedSlice = createSlice({
 			return issue;
 		},
 		deleteNotStarted: (state, action) => {
+			console.log('redux: ',action.payload.id)
 			return state.filter((issue) => issue.id !== action.payload.id);
 		},
+		// deleteInProgress: (state, action) => {
+		// 	return state.filter((issue) => issue.id !== action.payload.id);
+		// },
 	},
 });
 

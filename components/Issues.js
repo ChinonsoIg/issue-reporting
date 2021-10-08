@@ -90,20 +90,25 @@ const Issues = (props) => {
     />
   );
 
-  const renderItem = ({ item, index }) => (
+  const renderItem = ({ item, index }) => {
+    // console.log('render: ',item)
+    return (
     <IssuesList 
-      id={item.id}
+      issueUID={item.issueUID}
       navigation={props.navigation}
-      key={index}
+      // key={index}
       title={item.title}
       description={item.description}
       reportedBy={item.reportedBy} 
       reportedFor={item.department}
       attachments={item.downloadURL}
+      isNotStarted={item.isNotStarted}
+      isInProgress={item.isInProgress}
+      isCompleted={item.isCompleted}
       // timestamp={item.creation.seconds} 
     />
   );
-
+}
   
   if (notStarted.length === 0 && 
     inProgress.length === 0 && 

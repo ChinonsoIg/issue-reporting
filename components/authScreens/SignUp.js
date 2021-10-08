@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, StyleSheet, Pressable, TouchableHighlight, Image } from "react-native";
+import { View, Text, TextInput, StyleSheet, TouchableHighlight, Image, Alert, KeyboardAvoidingView, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import DropDownPicker from "react-native-dropdown-picker";
 import * as Notifications from 'expo-notifications';
@@ -20,12 +20,11 @@ Notifications.setNotificationHandler({
   }),
 });
 
-async function schedulePushNotification() {
+async function schedulePushNotification(name) {
   await Notifications.scheduleNotificationAsync({
     content: {
-      title: `Welcome to our platform`,
-      body: "You're successfully signed up!!",
-      // data: { data: 'goes here njj hjjj' },
+      title: `Welcome to our platform ${name}`,
+      body: "You're successfully signed up!",
     },
     trigger: { seconds: 2 },
   });
@@ -49,7 +48,13 @@ const SignUp = () => {
     const lastname = name.split(" ")[1];
     const userId = generateId(firstname, lastname)
 
-    if ((name === null) || (email === null) || (password === null) || (confirmPassword === null) || (department === null)) {
+    if (
+      (name === null) || 
+      (email === null) || 
+      (password === null) || 
+      (confirmPassword === null) || 
+      (department === null)
+      ) {
       console.log('No field should be empty');
       Alert.alert('No field should be empty');
     } else if (password.length < 6) {
@@ -59,7 +64,7 @@ const SignUp = () => {
       console.log('Passwords must match');
       Alert.alert('Passwords must match');
     } else {
-      console.log('You are good to go');
+      console.log('You are good to go!');
 
       try {
         firebase.auth().createUserWithEmailAndPassword(email, password)
@@ -76,7 +81,7 @@ const SignUp = () => {
               userId
             })
           console.log('result: ', result);
-          schedulePushNotification();
+          schedulePushNotification(name);
         })
         .catch((error) => {
           console.error('error: ', error)
@@ -107,7 +112,9 @@ const SignUp = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={{ flex: 1 }} >
+      
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }} >
+        <KeyboardAvoidingView>
         <View
           style={{
             flex: 1, 
@@ -183,7 +190,10 @@ const SignUp = () => {
             <Text style={styles.btnText}>Sign Up</Text>
           </TouchableHighlight>
         </View>
-      </View>
+      
+        </KeyboardAvoidingView>
+      </ScrollView>
+
     </SafeAreaView>
   )
 }

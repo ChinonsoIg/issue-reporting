@@ -1,18 +1,64 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, StyleSheet, Pressable, TouchableHighlight, Image } from "react-native";
+import { View, Text, TextInput, StyleSheet, Pressable, TouchableHighlight, Image, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "react-native-vector-icons";
 
 import { purple, white, purple_95, purple_80, darkPurple, purple_40 } from "../../utils/colours";
 // import landingImage from "../../image/work_together.png";
 
+import firebase from "firebase";
 
-const SignIn = ({ navigation }) => {
-  // const [email, setEmail] = useState("");
-  const [emailForResetPassword, setEmailForResetPassword] = useState("");
+
+const ResetPassword = ({ navigation }) => {
+  const [email, setEmail] = useState("");
 
   const onSubmit = () => {
-    console.log(email, password)
+    const actionCodeSettings = {
+      url: `https://www.example.com/?email=${email}`,
+      
+      android: {
+        // packageName: 'com.example.android',
+        installApp: true,
+        // minimumVersion: '12'
+      },
+      handleCodeInApp: true,
+      // When multiple custom dynamic link domains are defined, specify which
+      // one to use.
+      dynamicLinkDomain: "example.page.link"
+    };
+    
+    firebase.auth().sendPasswordResetEmail(actionCodeSettings)
+      .then(function() {
+        // Verification email sent.
+        console.log("Password reset email sent!",email)
+      })
+      .catch(function(error) {
+        // Error occurred. Inspect error.code.
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        console.log("errorCode: ", errorCode)
+        console.log("errorMessage: ", errorMessage)
+      });
+    
+
+    // if (email == undefined) {
+    //   Alert.alert("Email cannot be empty")
+    // }
+
+    // firebase.auth().sendPasswordResetEmail(email)
+    // .then(() => {
+    //   // Password reset email sent!
+    //   // ..
+    //   console.log("Password reset email sent!",email)
+    //   // navigation.navigate("Sign In")
+    // })
+    // .catch((error) => {
+    //   var errorCode = error.code;
+    //   var errorMessage = error.message;
+    //   // ..
+    //   console.log("errorCode: ", errorCode)
+    //   console.log("errorMessage: ", errorMessage)
+    // });
   }
 
   return (
@@ -30,8 +76,8 @@ const SignIn = ({ navigation }) => {
             </Text>
             <TextInput 
               style={styles.input} 
-              onChangeText={(e) => setEmailForResetPassword(e)}
-              value={emailForResetPassword}
+              onChangeText={(e) => setEmail(e)}
+              value={email}
               placeholder="E-mail"
             />
             <View 
@@ -56,7 +102,11 @@ const SignIn = ({ navigation }) => {
               </Text>
             </View>
           </View>
-          <TouchableHighlight style={styles.btn} onPress={onSubmit} underlayColor={purple_80} >
+          <TouchableHighlight 
+            style={styles.btn}  
+            underlayColor={purple_80}
+            onPress={onSubmit} 
+          >
             <Text style={styles.btnText}>Submit</Text>
           </TouchableHighlight>
         </View>
@@ -127,4 +177,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default SignIn;
+export default ResetPassword;

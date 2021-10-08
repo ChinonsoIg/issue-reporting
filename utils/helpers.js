@@ -12,10 +12,35 @@ export const removeWhitespace = (string) => {
   }
 }
 
-export const convertToUppercase = (str) => {
-  const str2 = `${str.charAt(0).toUpperCase()}${str.slice(1)}`;
+export const convertToUppercase = (word) => {
+  if (word == null || word == undefined) {
+    return null
+  }
+  // Expand this to accomodate people with any length of names
+  const string1 = word.split(" ")[0];
+  const string2 = word.split(" ")[1];
 
-  return str2;
+  const str1 = `${string1.charAt(0).toUpperCase()}${string1.slice(1)}`;
+  const str2 = string2 ? `${string2.charAt(0).toUpperCase()}${string2.slice(1)}` : "";
+
+  const combinedString = `${str1} ${str2}`;
+
+  return combinedString;
+}
+
+export const extractInitials = (word) => {
+  if (word == null || word == undefined) {
+    return null
+  }
+  const string1 = word.split(" ")[0];
+  const string2 = word.split(" ")[1];
+
+  const str1 = `${string1.charAt(0).toUpperCase()}`;
+  const str2 = `${string2.charAt(0).toUpperCase()}`;
+
+  const combinedString = `${str1}${str2}`;
+
+  return combinedString;
 }
 
 export const getTime = () => {

@@ -2,8 +2,10 @@ import React from "react";
 import { TouchableOpacity } from "react-native";
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import { Entypo } from "react-native-vector-icons";
+import { MaterialCommunityIcons } from "react-native-vector-icons";
 import * as Notifications from 'expo-notifications';
-import { white, purple, darkPurple, purple_70 } from "../utils/colours";
+import { white, purple, darkPurple, purple_70, purple_40 } from "../utils/colours";
+import { convertToUppercase } from "../utils/helpers";
 
 
 Notifications.setNotificationHandler({
@@ -26,7 +28,8 @@ async function schedulePushNotification(a,b,c) {
 }
 
 
-const IssuesList = ({ title, reportedBy, reportedFor, timestamp, attachments, navigation, id}) => {
+const IssuesList = ({ issueUID, title, reportedBy, reportedFor, timestamp, attachments, navigation, isNotStarted, isInProgress, isCompleted }) => {
+  // console.log(issueUID)
 
   const departmentAbbr = (name) => {
     switch (name) {
@@ -53,11 +56,34 @@ const IssuesList = ({ title, reportedBy, reportedFor, timestamp, attachments, na
   return (
     <View style={styles.item}>
       <View>
-        <TouchableOpacity
-          onPress={() => schedulePushNotification(title,reportedBy)}
-        >
+        <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
           <Text style={styles.title}>{title}</Text>
-        </TouchableOpacity>
+          <View>
+            {
+              isNotStarted ? (
+                <MaterialCommunityIcons
+                  name="checkbox-blank-circle-outline"
+                  color={purple_70}
+                  size={24} 
+                />
+              ) : (
+                isInProgress ? (
+                  <MaterialCommunityIcons
+                    name="circle-half-full"
+                    color={purple_70}
+                    size={24}
+                  />
+                ) : (
+                  <MaterialCommunityIcons
+                  name="check-circle"
+                  color={purple_70}
+                  size={24} 
+                />
+                )
+              )
+            }
+          </View>
+        </View>
         <View 
           style={{flex: 1, 
             flexDirection: "row", 
@@ -65,6 +91,7 @@ const IssuesList = ({ title, reportedBy, reportedFor, timestamp, attachments, na
           <Text>Reported by: </Text>
           <Text style={{color: purple_70}}>{reportedBy}</Text>
         </View>
+        <Text>To be resolved by: <Text style={{color: purple_70}}>{convertToUppercase(reportedFor)}</Text></Text>
         <Text>timestamp</Text>
       </View>
       <View 
@@ -75,7 +102,7 @@ const IssuesList = ({ title, reportedBy, reportedFor, timestamp, attachments, na
           alignItems: 'center'}} >
         <Pressable style={styles.btn}
           onPress={() => navigation.navigate("Task", {
-            uid: id
+            issueUID
           })} 
         >
           <Text style={styles.btnText}>View in Tasks</Text>

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, Image, Button, TextInput, Keyboard, KeyboardAvoidingView, TouchableWithoutFeedback, TouchableOpacity, Platform, Alert, Modal, Pressable } from "react-native";
+import { View, Text, StyleSheet, Image, Button, TextInput, Keyboard, KeyboardAvoidingView, TouchableWithoutFeedback, TouchableOpacity, Platform, Alert, Modal, Pressable, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import DropDownPicker from "react-native-dropdown-picker";
+import moment from "moment";
 import { Ionicons } from "react-native-vector-icons";
 
 import { bgSecondary, darkerPurple, white, purple, purple_80, purple_40, purple_95, purple_70 } from "../utils/colours";
@@ -52,6 +53,7 @@ const ReportIssue = (props) => {
   
   const uploadImage = async() => {
     // console.log('in modal');
+    let momentTime = moment().format('MMMM Do YYYY, h:mm:ss a')
     setModalVisible(!modalVisible);
     if ((title === null) || (department === null) || (location === null) || (description === null)) {
       console.log('No field should be empty');
@@ -76,7 +78,7 @@ const ReportIssue = (props) => {
       const taskCompleted = () => {
         task.snapshot.ref.getDownloadURL()
           .then((snapshot) => {
-            savePostData(snapshot)
+            savePostData(snapshot, momentTime)
             console.log('snap ',snapshot);
             console.log('Done')
           })
@@ -87,56 +89,41 @@ const ReportIssue = (props) => {
       }
 
       task.on("state_changed", taskProgress, taskError, taskCompleted)
-      // props.navigation.navigate("ReportIssueSuccess");
       setModalVisible(!modalVisible);
 
     }
   }
 
-  const savePostData = (downloadURL) => {
+  const savePostData = (downloadURL, createdAt) => {
     
-    const { name, userId } = user;
-    const word = removeWhitespace(title);
-    const issueId = generateId(word, 'asdftyuiwxyz');
-
-    firebase.firestore().collection("issues").doc()
-      .set({
+    const { name, userUID } = user;
+    
+    firebase.firestore().collection("issues")
+      .add({
         downloadURL,
-        issueId,
         title,
         department,
         location,
         description,
         reportedBy: name,
-        reporterUserId: userId,
+        reporterUserUID: userUID,
         isNotStarted: true,
-        creation: firebase.firestore.FieldValue.serverTimestamp()
+        createdAt,
       })
-      .then(() => {
-        console.log('items: ',{
-          issueId,
-          downloadURL,
-          title,
-          department,
-          location,
-          description,
-          reportedBy: name,
-          reporterUserId: userId,
-          isNotStarted: true,
-          creation: firebase.firestore.FieldValue.serverTimestamp()
-        });
+      .then((docRef) => {
+        saveNotification(docRef.id, createdAt)
         
         dispatch(
           addNotStarted({
-            issueId,
             downloadURL,
             title,
             department,
             location,
             description,
             reportedBy: name,
-            reporterUserId: userId,
+            reporterUserUID: userUID,
             isNotStarted: true,
+            createdAt,
           })
         );
         
@@ -146,43 +133,46 @@ const ReportIssue = (props) => {
       });
 
     
-    firebase.firestore().collection("notifications").doc()
+  }
+
+  // Save notification
+  const saveNotification = (docRefID, createdAt) => {
+    
+    const { name, userUID } = user;
+    return firebase.firestore()
+      .collection("notifications")
+      .doc()
       .set({
-        issueId,
-        title,
-        department,
-        reportedBy: name,
-        reporterUserId: userId,
-        creation: firebase.firestore.FieldValue.serverTimestamp()
+        issueUID: docRefID,
+        notificationTitle: title,
+        notificationDepartment: department,
+        notificationReportedBy: name,
+        notificationReporterUserUID: userUID,
+        isNewReport: true,
+        notificationCreatedAt: createdAt,
       })
-      .then(() => {
-        console.log('items: ',{
-          issueId,
-          title,
-          department,
-          reportedBy: name,
-          reporterUserId: userId,
-          creation: firebase.firestore.FieldValue.serverTimestamp()
-        });
-                
+      .then((doc) => {
+        console.log('notification written success')
       })
-      .catch((error) => {
-        console.error("Error writing notification: ", error);
-      });
+      .catch((error) => console.error("Error: ", error));
+
   }
   
-  const navigateToHome = () => {
-    setModalVisible(!modalVisible)
-    props.navigation.navigate("Home");
+  // Recheck workability
+  const navigateToHome = () => {    
+    setTimeout(() => {
+      setModalVisible(!modalVisible)
+      props.navigation.navigate("Home");
+    }, 3000);    
   }
   
 
   return (
-    <SafeAreaView style={styles.container}>     
+    <SafeAreaView style={styles.container}>
+      <ScrollView style={{flex: 1}}>
       <KeyboardAvoidingView
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'} >
-        
         
         {/* My Modal box */}
         <Modal
@@ -220,7 +210,6 @@ const ReportIssue = (props) => {
             </View>
           </View>
         </Modal>
-
 
         <TouchableWithoutFeedback
           onPress={Keyboard.dismiss} >
@@ -303,9 +292,11 @@ const ReportIssue = (props) => {
                 <Text style={styles.btnText}>Submit</Text>
               </TouchableOpacity>
             </View>
+          
           </View>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
+      </ScrollView>
      
     </SafeAreaView>
   )

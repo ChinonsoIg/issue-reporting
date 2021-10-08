@@ -5,12 +5,16 @@ export const completedSlice = createSlice({
   initialState: [],
   reducers: {
     getCompleted: (state, action) => {
-			let spreadData = [...state, ...action.payload];
+      // console.log('completed: ',action.payload);
+			let spreadData = [ ...action.payload ];
       return spreadData;
 		},
     addCompleted: (state, action) => {
 			const issue = [...state, action.payload]
 			return issue;
+		},
+    deleteCompleted: (state, action) => {
+			return state.filter((issue) => issue.id !== action.payload.id);
 		},
 	},
 });
@@ -18,7 +22,7 @@ export const completedSlice = createSlice({
 
 
 
-export const { getCompleted, addCompleted } = completedSlice.actions;
+export const { getCompleted, addCompleted, deleteCompleted } = completedSlice.actions;
 
 export default completedSlice.reducer;
 

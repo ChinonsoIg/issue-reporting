@@ -3,7 +3,8 @@ import { View, Text, StyleSheet, Pressable, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "react-native-vector-icons";
 
-import { bgSecondary, darkerPurple, purple_70, purple, purple_95 } from "../utils/colours";
+import { bgSecondary, darkerPurple, purple_70, purple, purple_95, white } from "../utils/colours";
+import { convertToUppercase } from "../utils/helpers";
 
 // For redux
 import firebase from "firebase";
@@ -11,11 +12,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { currentUser} from "../redux/slices/userSlice"
 import { deleteNotStarted } from "../redux/slices/notStartedSlice";
 import { addInProgress, deleteInProgress } from "../redux/slices/inProgressSlice";
-import { addCompleted } from "../redux/slices/completedSlice";
+import { addCompleted, deleteCompleted } from "../redux/slices/completedSlice";
+import { Alert } from "react-native";
 
 const Task = (props) => {
   const { route, navigation } = props;
-  let uid = route.params.uid;
+  let issueUID = route.params.issueUID;
   const dispatch = useDispatch();
 
   const user = useSelector(currentUser);
@@ -25,13 +27,13 @@ const Task = (props) => {
   const fetchTaskData = () => {
     firebase.firestore()
     .collection("issues")
-    .doc(uid)
+    .doc(issueUID)
     .get()
     .then((snapshot) => {
       if(snapshot.exists) {
         let obj = () => {
-          const id = uid
-          const data = snapshot.data()
+          const id = issueUID;
+          const data = snapshot.data();
           return { id, ...data }
         }
         setTaskData([...taskData, obj()]);
@@ -44,11 +46,17 @@ const Task = (props) => {
 
   useEffect(() => {
     fetchTaskData();
-  }, [uid])
+  }, [issueUID])
 
   const markAsInProgress = () => {
-    const { name, department } = user;
-    let markAsInProgressRef = firebase.firestore().collection("issues").doc(uid);
+    const { name, department, userUID } = user;
+    let notificationTitle = taskData[0].title;
+    let notificationDescription = taskData[0].description;
+    let notificationDepartment = taskData[0].department;
+    let notificationIsInProgress = true;
+    let notificationIsInProgressBy = name;
+
+    let markAsInProgressRef = firebase.firestore().collection("issues").doc(issueUID);
 
     if(taskData[0].department === department) {
       markAsInProgressRef.update({
@@ -69,7 +77,6 @@ const Task = (props) => {
 
         dispatch(
           addInProgress({ 
-            isNotStarted: false,
             isInProgress: true,
             isInProgressBy: name,
             ...trimData
@@ -77,7 +84,7 @@ const Task = (props) => {
         );
 
         dispatch(
-          deleteNotStarted({ id: uid })
+          deleteNotStarted({ id: issueUID })
         );
 
         navigation.navigate("Home");
@@ -86,13 +93,49 @@ const Task = (props) => {
           console.error("Error updating document: ", error);
       });
     } else {
-      console.error("Not your dept");
+      Alert.alert("This issue is not assigned to your department");
     }
+
+
+    // Save notification for in progress tasks
+    firebase.firestore().collection("notifications").doc()
+      .set({
+        issueUID,
+        notificationTitle,
+        notificationDescription,
+        notificationDepartment,
+        notificationIsInProgress,
+        notificationIsInProgressBy,
+        notificationIsInProgressByUserUID: userUID,
+        createdAt: "use momentjs"
+      })
+      .then(() => {
+        console.log('items: ',{
+          issueUID,
+          notificationTitle,
+          notificationDescription,
+          notificationDepartment,
+          notificationIsInProgress,
+          notificationIsInProgressBy,
+          notificationIsInProgressByUserUID: userUID,
+          createdAt: "use momentjs"
+        });
+                
+      })
+      .catch((error) => {
+        console.error("Error writing notification: ", error);
+      });
   }
 
+  
   const markAsCompleted = () => {
-    const { name, department } = user;
-    let markAsCompletedRef = firebase.firestore().collection("issues").doc(uid);
+    const { name, department, userUID } = user;
+    let notificationTitle = taskData[0].title;
+    let notificationDescription = taskData[0].description;
+    let notificationDepartment = taskData[0].department;
+    let notificationIsCompleted = true;
+
+    let markAsCompletedRef = firebase.firestore().collection("issues").doc(issueUID);
 
     if(taskData[0].department === department) {
       
@@ -116,7 +159,6 @@ const Task = (props) => {
   
           dispatch(
             addCompleted({ 
-              isInProgress: false,
               isCompleted: true,
               isCompletedBy: name,
               ...trimData
@@ -124,13 +166,13 @@ const Task = (props) => {
           );
   
           dispatch(
-            deleteInProgress({ id: uid })
+            deleteInProgress({ id: issueUID })
           );
   
           navigation.navigate("Home");
         })
         .catch((error) => {
-            console.error("Error updating document: ", error);
+          console.error("Error updating document: ", error);
         })
       ) : (
         markAsCompletedRef.update({
@@ -144,14 +186,13 @@ const Task = (props) => {
   
           let removeUnwanted = taskData && taskData.map((task) => {
             delete task.creation;
-            delete task.isInProgress;
+            delete task.isNotStarted;
             return { ...task }
           });
           let trimData = removeUnwanted[0];
   
           dispatch(
             addCompleted({ 
-              isInProgress: false,
               isCompleted: true,
               isCompletedBy: name,
               ...trimData
@@ -159,18 +200,74 @@ const Task = (props) => {
           );
   
           dispatch(
-            deleteInProgress({ id: uid })
+            deleteNotStarted({ id: issueUID })
           );
   
           navigation.navigate("Home");
         })
         .catch((error) => {
-            console.error("Error updating document: ", error);
+          console.error("Error updating document: ", error);
         })
       )
     } else {
-      console.error("Not your dept");
+      console.error("You can't resolve an issue not assigned to your department");
     }
+
+    // Save notification for completed tasks
+    firebase.firestore().collection("notifications").doc()
+      .set({
+        issueUID,
+        notificationTitle,
+        notificationDescription,
+        notificationDepartment,
+        notificationIsCompleted,
+        notificationIsCompletedBy: name,
+        notificationIsCompletedByUserUID: userUID,
+        isNewReport: false,
+        createdAt: "use momentjs"
+      })
+      .then(() => {
+        console.log('items: ',{
+          issueUID,
+          notificationTitle,
+          notificationDescription,
+          notificationDepartment,
+          notificationIsCompleted,
+          notificationIsCompletedBy: name,
+          notificationIsCompletedByUserUID: userUID,
+          isNewReport: false,
+          createdAt: "use momentjs"
+        });
+                
+      })
+      .catch((error) => {
+        console.error("Error writing notification: ", error);
+      });
+  }
+
+  const onDeleteIssue = () => {
+    const { department } = user;
+
+    if(taskData[0].department === department) {
+      let deleteRef = firebase.firestore().collection("issues").doc(issueUID);
+
+      deleteRef.delete().then(() => {
+        console.log("Document successfully deleted!");
+        dispatch(
+          deleteCompleted({ id: issueUID })
+        );
+        setTimeout(() => {
+          navigation.navigate("Home");
+        }, 3000);
+
+      }).catch((error) => {
+        console.error("Error removing document: ", error);
+      });
+
+    } else {
+      alert("You can't delete an issue not assigned to your unit");
+    }
+    
   }
 
   return (
@@ -214,15 +311,19 @@ const Task = (props) => {
           <Text style={{marginVertical: 10}}>Issue description: {task.description}</Text>
           <View style={{flexDirection: 'row', justifyContent: 'flex-start', marginVertical: 10}}>
             <Text>Reported by: {task.reportedBy}</Text>
-            <Text style={{marginHorizontal: 10}}>time piece</Text>
+            <Text style={{marginHorizontal: 10}}>timestamp</Text>
+          </View>
+          <View style={{flexDirection: 'row', justifyContent: 'flex-start', marginVertical: 10}}>
+            <Text>
+              {
+                (task.isNotStarted || task.isInProgress) && (
+                  <Text>To be resolved by: {convertToUppercase(task.department)} department.</Text>
+                )
+              }
+            </Text>
           </View>
           <View style={{flexDirection: 'row', justifyContent: 'flex-start', marginVertical: 10}}>
             <View>
-              {
-                task.isNotStarted && (
-                  <Text>To be resoslved by: {task.department} department.</Text>
-                )
-              }
               {
                 task.isInProgress && (
                   <Text>Marked as in progress by: {task.isInProgressBy}</Text>
@@ -231,12 +332,15 @@ const Task = (props) => {
               {
                 task.isCompleted && (
                   <>
-                    <Text>Marked as in progress by: {task.isInProgressBy}</Text>
-                    <Text>Resolved by: {task.isCompletedBy}</Text>
+                    <Text style={{marginVertical: 10}}>Marked as in progress by: {task.isInProgressBy}</Text>
+                    <Text>{`Resolved by: ${task.isCompletedBy}, ${convertToUppercase(task.department)} unit.`}</Text>
                   </>
                 )
               }
             </View>
+          </View>
+          <View style={{flexDirection: 'row', justifyContent: 'flex-start', marginVertical: 10}}>
+            <Text>Location: {task.location}</Text>
           </View>
           <View style={{flexDirection: 'row', justifyContent: 'space-between', marginVertical: 10}}>
             {
@@ -257,6 +361,18 @@ const Task = (props) => {
                 >
                   <Text style={styles.btnTextOutline}>Mark as completed</Text>
                 </Pressable>
+              )
+            }
+          </View>
+          <View>
+            {
+              task.isCompleted && (
+                <Pressable 
+                  style={styles.btn}
+                  onPress={() => onDeleteIssue()}
+                >
+                  <Text style={styles.btnText}>Delete Issue</Text>
+                </Pressable> 
               )
             }
           </View>
@@ -288,6 +404,23 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: darkerPurple,
   },
+  btn: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 4,
+    elevation: 3,
+    borderRadius: 5,
+    backgroundColor: purple,
+  },
+  btnText: {
+    fontSize: 16,
+    lineHeight: 21,
+    fontWeight: 'bold',
+    letterSpacing: 0.25,
+    color: white,
+  },
   btnOutline: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -304,7 +437,24 @@ const styles = StyleSheet.create({
     lineHeight: 21,
     letterSpacing: 0.25,
     color: purple,
-  }
+  },
+  btnDanger: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 4,
+    elevation: 3,
+    borderRadius: 5,
+    backgroundColor: purple,
+  },
+  btnDangerText: {
+    fontSize: 16,
+    lineHeight: 21,
+    fontWeight: 'bold',
+    letterSpacing: 0.25,
+    color: white,
+  },
 })
 
 

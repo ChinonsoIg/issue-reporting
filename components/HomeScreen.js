@@ -1,10 +1,11 @@
-import React, { useEffect } from "react";
-import { View, Text, StyleSheet, Pressable, Platform } from "react-native";
+import React, { useEffect, useState, useCallback } from "react";
+import { View, Text, StyleSheet, Pressable, Platform, ScrollView, RefreshControl } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Loading from "./Loading";
 
 import { useFonts, Roboto_400Regular, OpenSans_400Regular } from '@expo-google-fonts/dev';
 import { MaterialCommunityIcons, Ionicons } from "react-native-vector-icons";
-import { getTime } from "../utils/helpers";
+import { getTime, convertToUppercase, extractInitials } from "../utils/helpers";
 import { purple, white, goldenRod, purple_95, purple_80, bgSecondary, darkerPurple, purple_70 } from "../utils/colours";
 
 // For redux
@@ -17,7 +18,16 @@ import { getCompleted } from "../redux/slices/completedSlice";
 import { TouchableOpacity } from "react-native";
 
 
+const wait = timeout => {
+  return new Promise(resolve => {
+    setTimeout(resolve, timeout);
+  });
+};
+
 const HomeScreen = (props) => {
+
+  const [refreshing, setRefreshing] = useState(false);
+  const [count, setCount] = useState(0)
 
   let [fontsLoaded] = useFonts({
     Roboto_400Regular,
@@ -27,6 +37,7 @@ const HomeScreen = (props) => {
   const dispatch = useDispatch();
   const loggedIn = useSelector(isLoggedIn);
   const user = useSelector(currentUser);
+  // console.log(user)
 
 
   const notStartedRedux = useSelector((state) => {
@@ -84,8 +95,14 @@ const HomeScreen = (props) => {
     .get()
     .then((snapshot) => {
       if (snapshot.exists) {
+        
+        let userData = {}
+        const userUID = snapshot.id;
         const data = snapshot.data();
-        dispatch(login(data))
+
+        userData = {userUID, ...data}
+        console.log('user data: ', userData)
+        dispatch(login(userData))
       } else {
         console.log('Does not exist!!')
         dispatch(logout());
@@ -108,10 +125,10 @@ const HomeScreen = (props) => {
     .get()
     .then((snapshot) => {
       let isNotStarted = snapshot.docs.map((doc) => {
-        const id = doc.id;
+        const issueUID = doc.id;
         const data = doc.data();
 
-        return { id, ...data };
+        return { issueUID, ...data };
       });
       let deleteTimer = isNotStarted.map((doc) => {
         delete doc.creation;
@@ -131,10 +148,10 @@ const HomeScreen = (props) => {
     .get()
     .then((snapshot) => {
       let isInProgress = snapshot.docs.map((doc) => {
-          const id = doc.id;
+          const issueUID = doc.id;
           const data = doc.data();
 
-          return { id, ...data }
+          return { issueUID, ...data }
       })
       let deleteTimer = isInProgress.map((doc) => {
         delete doc.creation;
@@ -154,10 +171,10 @@ const HomeScreen = (props) => {
     .get()
     .then((snapshot) => {
       let isCompleted = snapshot.docs.map((doc) => {
-          const id = doc.id;
+          const issueUID = doc.id;
           const data = doc.data();
 
-          return { id, ...data }
+          return { issueUID, ...data }
       });
       let deleteTimer = isCompleted.map((doc) => {
         delete doc.creation;
@@ -169,6 +186,16 @@ const HomeScreen = (props) => {
       )
     })
   }
+
+  const onRefresh = () => {
+
+    wait(4000).then(() => {
+      fetchNotStarted();
+      fetchInProgress();
+      fetchCompleted()
+    })
+    
+  };
 
   useEffect(() => {
     fetchUser();
@@ -182,115 +209,122 @@ const HomeScreen = (props) => {
 
   if (!user || user == undefined) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text style={{ color: purple, fontSize: 20 }}>Loading...</Text>
-      </View>
+      <Loading />
     )
   }
 
+  console.log(convertToUppercase("ngolo kante odogwu"))
+  console.log(extractInitials("ngolo kante odogwu"))
   const { name } = user;
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.boxOne}>
-        <Text 
-          style={
-            [styles.boldText, 
-            // {fontFamily: fontsLoaded ? "Roboto_400Regular" : null}, 
-            {fontSize: 18}]}
-        >
-          Good {getTime()}, {name}
-        </Text>
-        <Text>Glad to have you here, we are ready to help you report an issue.</Text>
-        <TouchableOpacity style={styles.btn}
-          onPress={() => props.navigation.push("Report an Issue")} >
-          <Text style={styles.btnText}>Report an issue</Text>
-        </TouchableOpacity>
-      </View>
-      <View style={styles.boxTwo}>
-        <Text 
-          style={[styles.boldText, {flex: 1}]}>
-            Issues timeline
-        </Text>
-        <View style={styles.reportsByYou}>
-          <View style={styles.reportsStats}>
-            <View>
-              <MaterialCommunityIcons
-                name="check-circle"
-                color={purple_70}
-                size={24} />
-            </View>
-            <Text>{completedRedux.length}</Text>
-            <Text>Completed</Text>
-          </View>
-          <View style={styles.reportsStats}>
-            <View>
-              <MaterialCommunityIcons
-                name="circle-half-full"
-                color={purple_70}
-                size={24} />
-            </View>
-            <Text>{inProgressRedux.length}</Text>
-            <Text>In progress</Text>
-          </View>
-          <View style={styles.reportsStats}>
-            <View>
-              <MaterialCommunityIcons
-                name="checkbox-blank-circle-outline"
-                color={purple_70}
-                size={24} />
-            </View>
-            <Text>{notStartedRedux.length}</Text>
-            <Text>Not started</Text>
-          </View>
-        </View>
-        <Pressable
-          style={styles.btnOutline}
-          onPress={() => props.navigation.navigate("Issues")} >
-          <Text style={styles.btnTextOutline}>View issues</Text>
-        </Pressable>
-      </View>
-      <View style={styles.boxThree}>
-        <Text 
-          style={[styles.boldText, {flex: 1}, {justifyContent: 'flex-end'}, {paddingTop: 10}]}>
-            Last 7 days
-        </Text>
-        <View style={styles.lastSevenDays}>
-          <View style={{flex: 1, flexDirection: 'row'}}>
-            <MaterialCommunityIcons name="medal" size={22} color={goldenRod}
-            style={{paddingRight: 10}} />
-            <Text>Your team has completed <Text style={styles.boldText}>{completeByMyTeam()}</Text> issue
-              </Text>
-          </View>
-          <View style={{flex: 1, flexDirection: 'row'}}>
-            <Ionicons 
-              name={Platform.OS === "ios" 
-                ? "ios-time-outline" 
-                : "md-time-outline"} 
-              size={22} 
-              color={purple_80}
-              style={{paddingRight: 10}} />
-            <Text>The average completion time was <Text style={styles.boldText}>0</Text> days</Text>
-          </View>
-          <View style={{flex: 1, flexDirection: 'row'}}>
-            <Ionicons 
-              name={Platform.OS === "ios" 
-                ? "ios-file-tray" 
-                : "md-file-tray"} 
-              size={22} 
-              color={purple_80}
-              style={{paddingRight: 10}} />
-            <Text>
-              There have been <Text style={styles.boldText}>11</Text> new issues reported.
+      <ScrollView 
+        contentContainerStyle={{ flexGrow: 1 }}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
+
+          <View style={styles.boxOne}>
+            <Text 
+              style={
+                [styles.boldText, 
+                // {fontFamily: fontsLoaded ? "Roboto_400Regular" : null}, 
+                {fontSize: 18}]}
+            >
+              Good {getTime()}, {convertToUppercase(name)}
             </Text>
+            <Text>Glad to have you here, we are ready to help you report an issue.</Text>
+            <TouchableOpacity style={styles.btn}
+              onPress={() => props.navigation.push("Report an Issue")} >
+              <Text style={styles.btnText}>Report an issue</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.boxTwo}>
+            <Text 
+              style={[styles.boldText, {flex: 1}]}>
+                Issues timeline
+            </Text>
+            <View style={styles.reportsByYou}>
+              <View style={styles.reportsStats}>
+                <View>
+                  <MaterialCommunityIcons
+                    name="check-circle"
+                    color={purple_70}
+                    size={24} />
+                </View>
+                <Text>{completedRedux.length}</Text>
+                <Text>Completed</Text>
+              </View>
+              <View style={styles.reportsStats}>
+                <View>
+                  <MaterialCommunityIcons
+                    name="circle-half-full"
+                    color={purple_70}
+                    size={24} />
+                </View>
+                <Text>{inProgressRedux.length}</Text>
+                <Text>In progress</Text>
+              </View>
+              <View style={styles.reportsStats}>
+                <View>
+                  <MaterialCommunityIcons
+                    name="checkbox-blank-circle-outline"
+                    color={purple_70}
+                    size={24} />
+                </View>
+                <Text>{notStartedRedux.length}</Text>
+                <Text>Not started</Text>
+              </View>
+            </View>
+            <Pressable
+              style={styles.btnOutline}
+              onPress={() => props.navigation.navigate("Issues")} >
+              <Text style={styles.btnTextOutline}>View issues</Text>
+            </Pressable>
+          </View>
+          <View style={styles.boxThree}>
+          <Text 
+            style={[styles.boldText, {flex: 1}, {justifyContent: 'flex-end'}, {paddingTop: 10}]}>
+              Last 7 days
+          </Text>
+          <View style={styles.lastSevenDays}>
+            <View style={{flex: 1, flexDirection: 'row'}}>
+              <MaterialCommunityIcons name="medal" size={22} color={goldenRod}
+              style={{paddingRight: 10}} />
+              <Text>Your team has completed <Text style={styles.boldText}>{completeByMyTeam()}</Text> issue
+                </Text>
+            </View>
+            <View style={{flex: 1, flexDirection: 'row'}}>
+              <Ionicons 
+                name={Platform.OS === "ios" 
+                  ? "ios-time-outline" 
+                  : "md-time-outline"} 
+                size={22} 
+                color={purple_80}
+                style={{paddingRight: 10}} />
+              <Text>The average completion time was <Text style={styles.boldText}>0</Text> days</Text>
+            </View>
+            <View style={{flex: 1, flexDirection: 'row'}}>
+              <Ionicons 
+                name={Platform.OS === "ios" 
+                  ? "ios-file-tray" 
+                  : "md-file-tray"} 
+                size={22} 
+                color={purple_80}
+                style={{paddingRight: 10}} />
+              <Text>
+                There have been <Text style={styles.boldText}>{count}</Text> new issues reported.
+              </Text>
+            </View>
           </View>
         </View>
-      </View>
+
+      </ScrollView>
     </SafeAreaView>
   )
 }
-
-
 
 
 const styles = StyleSheet.create({

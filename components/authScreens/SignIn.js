@@ -1,13 +1,11 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, StyleSheet, Pressable, TouchableHighlight, Image, Alert } from "react-native";
+import { View, Text, TextInput, StyleSheet, TouchableHighlight, Image, Alert, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as Notifications from 'expo-notifications';
 import landingImage from "../../image/work_together.png";
 import { purple, white, purple_95, purple_80, darkPurple, purple_40 } from "../../utils/colours";
 
 import firebase from "firebase";
-import { useDispatch, useSelector } from "react-redux";
-import { currentUser } from "../../redux/slices/userSlice";
 
 // For notifications
 Notifications.setNotificationHandler({
@@ -23,7 +21,6 @@ async function schedulePushNotification() {
     content: {
       title: `Welcome back`,
       body: "You're signed in!",
-      // data: { data: 'goes here njj hjjj' },
     },
     trigger: { seconds: 2 },
   });
@@ -31,8 +28,8 @@ async function schedulePushNotification() {
 
 
 const SignIn = ({ navigation }) => {
-  // const dispatch = useDispatch()
-  const user = useSelector(currentUser);
+  // // const dispatch = useDispatch()
+  // const user = useSelector(currentUser);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -65,7 +62,7 @@ const SignIn = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={{ flex: 1 }} >
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }} >
         <View
           style={{
             flex: 1, 
@@ -126,7 +123,7 @@ const SignIn = ({ navigation }) => {
             <Text style={styles.btnText}>Sign In</Text>
           </TouchableHighlight>
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   )
 }

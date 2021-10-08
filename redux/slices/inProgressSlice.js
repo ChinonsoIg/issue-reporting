@@ -5,7 +5,8 @@ export const inProgressSlice = createSlice({
   initialState: [],
   reducers: {
     getInProgress: (state, action) => {
-			let spreadData = [...state, ...action.payload];
+			// console.log('inprogress: ',action.payload);
+			let spreadData = [ ...action.payload ];
 			return spreadData;
 		},
 		addInProgress: (state, action) => {
