@@ -4,7 +4,7 @@ import { SearchBar } from "react-native-elements";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import IssuesList from "./IssuesList";
-import { bgSecondary, darkerPurple, purple_40 } from "../utils/colours";
+import { bgSecondary, darkPurple, purple_40, purple_80, white } from "../utils/colours";
 
 // For redux
 import { useSelector } from "react-redux";
@@ -94,9 +94,9 @@ const Issues = (props) => {
     // console.log('render: ',item)
     return (
     <IssuesList 
+      key={index}
       issueUID={item.issueUID}
       navigation={props.navigation}
-      // key={index}
       title={item.title}
       description={item.description}
       reportedBy={item.reportedBy} 
@@ -105,7 +105,7 @@ const Issues = (props) => {
       isNotStarted={item.isNotStarted}
       isInProgress={item.isInProgress}
       isCompleted={item.isCompleted}
-      // timestamp={item.creation.seconds} 
+      createdAt={item.createdAt} 
     />
   );
 }
@@ -133,7 +133,16 @@ const Issues = (props) => {
       <SearchBar 
         placeholder="Search issues"
         onChangeText={(e) => updateQuery(e)}
-        value={query} 
+        value={query}
+        inputContainerStyle={{backgroundColor: white}}
+        leftIconContainerStyle={{backgroundColor: white}}
+        inputStyle={{backgroundColor: white}}
+        containerStyle={{
+          backgroundColor: purple_80,
+          justifyContent: 'space-around',
+          borderTopWidth: 0,
+          borderBottomWidth: 0,
+        }}
       />
       <SectionList        
         sections={result} 
@@ -154,7 +163,7 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: darkerPurple,
+    color: darkPurple,
     marginTop: 15,
   },
 })

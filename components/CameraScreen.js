@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Button, Image } from 'react-native';
+import { StyleSheet, Text, View, Button, Image, TouchableOpacity } from 'react-native';
 import { Camera } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
+import { purple_80, darkPurple } from "../utils/colours";
 
 const CameraScreen = (props) => {
-  console.log('Cam props: ', props)
+  console.log('Cam props: ', props);
   
   const [hasGalleryPermission, setHasGalleryPermission] = useState(null);
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
@@ -64,7 +65,7 @@ const CameraScreen = (props) => {
           ratio={'1:1'} />
       </View>
 
-      <Button
+      {/* <Button
         title="Flip Camera"
         onPress={() => {
           setType(
@@ -82,7 +83,47 @@ const CameraScreen = (props) => {
           params: {pictureURI: image},
           merge: true
         });
-      }} />
+      }} /> */}
+
+      <View style={{flexDirection: 'column', justifyContent: 'space-around'}}>
+        <TouchableOpacity
+          style={styles.pictureBtn}
+          onPress={() => {
+            setType(
+              type === Camera.Constants.Type.back
+                ? Camera.Constants.Type.front
+                : Camera.Constants.Type.back
+            );
+          }}
+        >
+          <Text style={{fontSize: 16, color: darkPurple}}>Flip camera</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.pictureBtn}
+          onPress={() => takePicture()}
+        >
+          <Text style={{fontSize: 16, color: darkPurple}}>Take picture</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.pictureBtn}
+          onPress={() => pickImage()}
+        >
+          <Text style={{fontSize: 16, color: darkPurple}}>Pick image from gallery</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.pictureBtn}
+          onPress={() => {
+            props.navigation.navigate({
+              name: "Report an Issue",
+              params: {pictureURI: image},
+              merge: true
+            });
+          }}
+        >
+          <Text style={{fontSize: 16, color: darkPurple}}>Save</Text>
+        </TouchableOpacity>
+      </View>
+
       {image && <Image source={{ uri: image }} style={{ flex: 1 }} />}
     </View>
   );
@@ -98,6 +139,14 @@ const styles = StyleSheet.create({
   fixedRatio: {
     flex: 1,
     aspectRatio: 1
+  },
+  pictureBtn: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    backgroundColor: purple_80,
+    padding: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: darkPurple,
   }
 })
 

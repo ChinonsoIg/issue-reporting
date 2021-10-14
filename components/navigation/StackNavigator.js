@@ -28,10 +28,10 @@ const HomeStackNavigator = () => {
   return (
     <Stack.Navigator screenOptions={screenOptionStyle}>
       <Stack.Screen name="Home" component={HomeScreen} options={{headerShown: false}} />
-      <Stack.Screen name="Issues" component={Issues} options={{headerTitleAlign: "center"}} />
+      {/* <Stack.Screen name="Issues" component={Issues} options={{headerTitleAlign: "center"}} /> */}
       <Stack.Screen name="Report an Issue" component={ReportIssue} options={{headerTitleAlign: "center"}} />
       <Stack.Screen name="CameraScreen" component={CameraScreen} options={{headerTitleAlign: "center"}} />
-      <Stack.Screen name="Task" component={Task} options={{headerTitleAlign: "center"}} />
+      {/* <Stack.Screen name="Task" component={Task} options={{headerTitleAlign: "center"}} /> */}
     </Stack.Navigator>
   );
 }

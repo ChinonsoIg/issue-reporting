@@ -7,7 +7,6 @@ import * as Notifications from 'expo-notifications';
 import { purple, white, purple_95, purple_80, darkPurple, purple_40, black } from "../../utils/colours";
 import signInImage from "../../image/work_together.png";
 import { dept } from "../../utils/api";
-import { generateId } from "../../utils/helpers";
 
 import firebase from "firebase";
 
@@ -46,7 +45,6 @@ const SignUp = () => {
   const onSignUp = () => {
     const firstname = name.split(" ")[0];
     const lastname = name.split(" ")[1];
-    const userId = generateId(firstname, lastname)
 
     if (
       (name === null) || 
@@ -77,8 +75,7 @@ const SignUp = () => {
               email,
               password,
               confirmPassword,
-              department,
-              userId
+              department
             })
           console.log('result: ', result);
           schedulePushNotification(name);
@@ -95,7 +92,7 @@ const SignUp = () => {
               Alert.alert("Please enter a valid email address") 
               break;
             case "auth/weak-password":
-              Alert.alert("Password mut be at least 6 characters long!")
+              Alert.alert("Password must be at least 6 characters long!")
               break;
             default:
               Alert.alert("Please cross-check that all the fields are properly filled")
@@ -104,6 +101,7 @@ const SignUp = () => {
         })
       } catch (err) {
         console.error(err);
+        Alert.alert("Network error!")
       }
     
     }

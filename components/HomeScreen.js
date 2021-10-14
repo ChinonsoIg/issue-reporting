@@ -6,7 +6,7 @@ import Loading from "./Loading";
 import { useFonts, Roboto_400Regular, OpenSans_400Regular } from '@expo-google-fonts/dev';
 import { MaterialCommunityIcons, Ionicons } from "react-native-vector-icons";
 import { getTime, convertToUppercase, extractInitials } from "../utils/helpers";
-import { purple, white, goldenRod, purple_95, purple_80, bgSecondary, darkerPurple, purple_70 } from "../utils/colours";
+import { purple, white, goldenRod, purple_95, purple_80, bgSecondary, darkPurple, purple_70, bgPrimary } from "../utils/colours";
 
 // For redux
 import firebase from "firebase";
@@ -190,6 +190,7 @@ const HomeScreen = (props) => {
   const onRefresh = () => {
 
     wait(4000).then(() => {
+      fetchUser();
       fetchNotStarted();
       fetchInProgress();
       fetchCompleted()
@@ -278,11 +279,11 @@ const HomeScreen = (props) => {
                 <Text>Not started</Text>
               </View>
             </View>
-            <Pressable
+            {/* <Pressable
               style={styles.btnOutline}
               onPress={() => props.navigation.navigate("Issues")} >
               <Text style={styles.btnTextOutline}>View issues</Text>
-            </Pressable>
+            </Pressable> */}
           </View>
           <View style={styles.boxThree}>
           <Text 
@@ -351,7 +352,7 @@ const styles = StyleSheet.create({
   },
   boldText: {
     fontWeight: 'bold',
-    color: darkerPurple,
+    color: darkPurple,
   },
   btn: {
     alignItems: 'center',
@@ -377,7 +378,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 32,
     borderRadius: 4,
     elevation: 3,
-    borderRadius: 5,
     borderColor: purple,
     borderWidth: 5,
     backgroundColor: purple_95,
@@ -396,7 +396,7 @@ const styles = StyleSheet.create({
     paddingTop: 5,
     margin: 5,
     borderRadius: 5,
-    backgroundColor: white,
+    backgroundColor: bgPrimary,
   },
   reportsStats: {
     flex: 2,

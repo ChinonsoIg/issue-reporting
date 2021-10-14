@@ -6,7 +6,7 @@ export const notStartedSlice = createSlice({
   reducers: {
     getNotStarted: (state, action) => {
 			// console.log('notstarted: ',action.payload);
-      let spreadData = [ ...action.payload ];
+      let spreadData = [ ...state, ...action.payload ];
 			return spreadData;
 		},
 		addNotStarted: (state, action) => {

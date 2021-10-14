@@ -28,7 +28,7 @@ async function schedulePushNotification(a,b,c) {
 }
 
 
-const IssuesList = ({ issueUID, title, reportedBy, reportedFor, timestamp, attachments, navigation, isNotStarted, isInProgress, isCompleted }) => {
+const IssuesList = ({ issueUID, title, reportedBy, reportedFor, createdAt, attachments, navigation, isNotStarted, isInProgress, isCompleted }) => {
   // console.log(issueUID)
 
   const departmentAbbr = (name) => {
@@ -92,7 +92,7 @@ const IssuesList = ({ issueUID, title, reportedBy, reportedFor, timestamp, attac
           <Text style={{color: purple_70}}>{reportedBy}</Text>
         </View>
         <Text>To be resolved by: <Text style={{color: purple_70}}>{convertToUppercase(reportedFor)}</Text></Text>
-        <Text>timestamp</Text>
+        <Text style={{color: purple_70, fontStyle: 'italic'}}>{createdAt}</Text>
       </View>
       <View 
         style={{flex:1, 

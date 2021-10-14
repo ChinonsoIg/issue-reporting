@@ -15,5 +15,5 @@ export const darkerPurple = "#1a001a";
 export const yellow = "#ffff00";
 export const green = "#008000";
 
-export const bgSecondary = "rgba(255, 230, 255, 0.3)";
-export const bgPrimary = "rgba(255, 230, 255)"
+export const bgSecondary = "rgba(255, 204, 255, 0.3)";
+export const bgPrimary = "rgba(255, 230, 255, 0.1)"

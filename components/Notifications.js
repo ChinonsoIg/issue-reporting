@@ -45,7 +45,7 @@ const Notifications = (props) => {
     <NotificationsList 
       issueUID={item.issueUID}
       title={item.notificationTitle}
-      reportedBy={item.reportedBy}
+      reportedBy={item.notificationReportedBy}
       department={item.notificationDepartment}
       description={item.notificationDescription}
       isInProgress={item.notificationIsInProgress}
@@ -53,7 +53,7 @@ const Notifications = (props) => {
       isCompleted={item.notificationIsCompleted}
       isCompletedBy={item.notificationIsCompletedBy}
       isNewReport={item.isNewReport}
-      createdAt={item.createdAt}
+      createdAt={item.notificationCreatedAt}
       navigation={props.navigation}
     />
   );
@@ -91,7 +91,7 @@ const Notifications = (props) => {
         <FlatList
           data={notificationData}
           renderItem={renderItem}
-          keyExtractor={item => item.id}
+          keyExtractor={item => item.issueUID}
           refreshControl={
             <RefreshControl
               //refresh control used for the Pull to Refresh

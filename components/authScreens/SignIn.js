@@ -28,8 +28,6 @@ async function schedulePushNotification() {
 
 
 const SignIn = ({ navigation }) => {
-  // // const dispatch = useDispatch()
-  // const user = useSelector(currentUser);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -56,6 +54,7 @@ const SignIn = ({ navigation }) => {
       })
     } catch (err) {
       console.error(err);
+      Alert.alert("Network error!")
     }
 
   }

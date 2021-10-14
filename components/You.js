@@ -8,9 +8,8 @@ import { Camera } from 'expo-camera';
 import { Avatar, ListItem } from 'react-native-elements';
 
 
-import { bgSecondary, darkPurple, white, purple_70, purple_80, purple_95, red, darkerPurple, purple } from "../utils/colours";
+import { bgSecondary, darkPurple, white, purple_70, purple_80, purple_95, red, purple } from "../utils/colours";
 import { convertToUppercase, extractInitials } from "../utils/helpers";
-import logo from "../assets/logo.png";
 
 // For redux
 import firebase from "firebase";
@@ -42,6 +41,7 @@ const You = (props) => {
   const dispatch = useDispatch()
   
   const user = useSelector(currentUser);
+  console.log('user: ',user)
 
   const { name, department, photoURL } = user;
 
@@ -128,17 +128,21 @@ const You = (props) => {
 
   }, [selectedImage])
   
-
-  const onSignOut = () => {
-    // const firstname = name.split(' ')[0];
   
-    firebase.auth().signOut()
-      .then(() => {
-        console.log('User signed out');
+  const onSignOut = async () => {
+
+    try {
+      await firebase.auth().signOut();
+        console.log('user out')
         dispatch(logout())
-      //   schedulePushNotification(convertToUppercase(firstname));
-      })
-  }
+        schedulePushNotification(convertToUppercase(firstname));      
+
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Error logging out")
+    }
+
+  }  
 
   const onDeleteUser = () => {
     console.log('user deleted');
@@ -155,6 +159,8 @@ const You = (props) => {
     });
   }
   
+  const avatarInitials = extractInitials(name);
+
   return (
     <SafeAreaView style={styles.container}>
 
@@ -197,17 +203,16 @@ const You = (props) => {
             <Avatar
               rounded
               size="xlarge"
-              title={extractInitials(name)}
-              activeOpacity={0.7}
+              title={avatarInitials}
               source={{ 
                 uri: photoURL
               }}
+              activeOpacity={0.7}
               titleStyle={{color: darkPurple}}
               containerStyle={{
                 backgroundColor: "silver",
               }}
-            />
-           
+            />           
             <Ionicons
               name={
                 Platform.OS === 'ios'
@@ -223,7 +228,7 @@ const You = (props) => {
             />
           </View>
           <View style={{ justifyContent: 'center', alignItems: 'center', marginTop: 5 }}>
-            <Text style={{fontWeight: 'bold', color: darkerPurple}}>{name}</Text>
+            <Text style={{fontWeight: 'bold', color: darkPurple}}>{name}</Text>
             <Text>Department: {convertToUppercase(department)}</Text>
           </View>
         </View>
@@ -320,7 +325,6 @@ const styles = StyleSheet.create({
     borderRadius: 75,
   },
   icon: {
-    // backgroundColor: '#ccc',
     color: purple,
     position: 'absolute',
     right: 5,
@@ -357,7 +361,6 @@ const styles = StyleSheet.create({
     backgroundColor: purple_95,
     borderRadius: 20,
     padding: 35,
-    // alignItems: "center",
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -388,12 +391,12 @@ const styles = StyleSheet.create({
   modalText: {
     marginBottom: 45,
     textAlign: "center",
-    color: darkerPurple,
+    color: darkPurple,
     fontSize: 16
   },
   bigFont: {
     fontSize: 25,
-    color: darkerPurple,
+    color: darkPurple,
   },
 
 

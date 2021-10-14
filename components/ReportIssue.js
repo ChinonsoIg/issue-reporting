@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, Image, Button, TextInput, Keyboard, KeyboardAvoidingView, TouchableWithoutFeedback, TouchableOpacity, Platform, Alert, Modal, Pressable, ScrollView } from "react-native";
+import { View, Text, StyleSheet, Image, Button, TextInput, Keyboard, KeyboardAvoidingView, TouchableWithoutFeedback, TouchableOpacity, Platform, Alert, Modal, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import DropDownPicker from "react-native-dropdown-picker";
-import moment from "moment";
 import { Ionicons } from "react-native-vector-icons";
+import moment from "moment";
 
-import { bgSecondary, darkerPurple, white, purple, purple_80, purple_40, purple_95, purple_70 } from "../utils/colours";
+import { bgSecondary, white, purple, purple_80, purple_40, purple_95, purple_70, darkPurple } from "../utils/colours";
 import { dept, loc } from "../utils/api";
 import { generateId, removeWhitespace } from "../utils/helpers";
 
@@ -52,7 +52,7 @@ const ReportIssue = (props) => {
 
   
   const uploadImage = async() => {
-    // console.log('in modal');
+
     let momentTime = moment().format('MMMM Do YYYY, h:mm:ss a')
     setModalVisible(!modalVisible);
     if ((title === null) || (department === null) || (location === null) || (description === null)) {
@@ -201,12 +201,12 @@ const ReportIssue = (props) => {
                   Your issue has been reported successfully!!
                 </Text>
               </View>
-              <Pressable
+              <TouchableOpacity
                 style={[styles.button, styles.buttonClose]}
                 onPress={() => navigateToHome()}
               >
                 <Text style={styles.textStyle}>Go to home</Text>
-              </Pressable>
+              </TouchableOpacity>
             </View>
           </View>
         </Modal>
@@ -267,13 +267,26 @@ const ReportIssue = (props) => {
                 Tap the button below to share a photo from your phone or take a picture with your camera!
               </Text>
               
-              <View style={{ flexDirection: 'row', justifyContent: 'space-around'}}>
-                <Button
-                  title="Take picture"
+              <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
+                <TouchableOpacity
+                  style={styles.pictureBtn}
                   onPress={() =>
                     props.navigation.navigate('CameraScreen')
                   }
-                />
+                >
+                  <Ionicons
+                    name={Platform.OS === "ios"
+                      ? "ios-camera"
+                      : "md-camera"
+                    }
+                    size={24}
+                    color={purple}
+                    style={{ marginHorizontal: 5 }}
+                  />
+                  <Text style={{fontSize: 16, color: darkPurple, marginHorizontal: 5}}>
+                    Take picture
+                  </Text>
+                </TouchableOpacity>
               </View>
             </View>
 
@@ -322,13 +335,13 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: darkerPurple,
+    color: darkPurple,
     marginTop: 6,
     textAlign: 'center'
   },
   bigFont: {
     fontSize: 25,
-    color: darkerPurple,
+    color: darkPurple,
   },
   btn: {
     alignItems: 'center',
@@ -369,6 +382,15 @@ const styles = StyleSheet.create({
     letterSpacing: 0.25,
     color: purple_70,
   },
+  pictureBtn: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    backgroundColor: purple_80,
+    padding: 15,
+    borderRadius: 4,
+    borderColor: purple_70,
+    borderWidth: 3
+  },
 
 
   // For Modal
@@ -397,8 +419,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 10,
     elevation: 2,
-    // marginTop: 25,
-    // width: 100
   },
   buttonClose: {
     backgroundColor: purple,

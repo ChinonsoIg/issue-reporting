@@ -1,9 +1,8 @@
 export const dept = [
-  // {label: "None", value: "none"},
   {label: "Electrical (ELC)", value: "electrical"},
   {label: "Automobile (AUT)", value: "automobile"},
   {label: "Information Technology (IT)", value: "information technology"},
-  {label: "Plumbing and Sewage Mgt (PSM)", value: "plumbing and sewage mgt"},
+  {label: "Plumbing and Sewage Mgt (PSM)", value: "plumbing and sewage management"},
   {label: "Medical (MED)", value: "medical"}
 ];
 

@@ -6,7 +6,7 @@ export const completedSlice = createSlice({
   reducers: {
     getCompleted: (state, action) => {
       // console.log('completed: ',action.payload);
-			let spreadData = [ ...action.payload ];
+			let spreadData = [ ...state, ...action.payload ];
       return spreadData;
 		},
     addCompleted: (state, action) => {

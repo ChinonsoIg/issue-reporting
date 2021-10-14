@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet, Pressable } from "react-native";
-import { white, purple, darkPurple, purple_40 } from "../utils/colours";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { white, purple, darkPurple, purple_40, purple_80, purple_95 } from "../utils/colours";
 import { convertToUppercase } from "../utils/helpers";
 
 
@@ -29,13 +30,15 @@ const NotificationsList = ({ isNewReport, issueUID, title, department, reportedB
                   : ` resolved issue.`
                 )
             }
-          </Text>
-           
+          </Text>          
         </View>
         <View>
           <Text style={styles.time}>{createdAt}</Text>
         </View>
       </Pressable>
+      <View style={{flex: 1, alignItems: 'center', paddingTop: 8}}>
+        <View style={{width: '75%', borderBottomWidth: 1, borderBottomColor: purple_80,}}></View>
+      </View>
     </View>
   );
 }
@@ -43,10 +46,8 @@ const NotificationsList = ({ isNewReport, issueUID, title, department, reportedB
 const styles = StyleSheet.create({
   item: {
     backgroundColor: white,
-    paddingVertical: 12,
+    paddingVertical: 8,
     paddingHorizontal: 5,
-    borderBottomWidth: 1,
-    borderTopColor: purple_40,
   },
   titleText: {
     fontWeight: '700',
@@ -58,6 +59,7 @@ const styles = StyleSheet.create({
   },
   time: {
     color: purple,
+    fontStyle: 'italic'
   }
 })
 
