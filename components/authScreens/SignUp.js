@@ -175,6 +175,7 @@ const SignUp = () => {
                 width: '100%',
                 flexDirection: 'row',  
                 justifyContent: 'center',
+                marginBottom: 10
               }}
             >
               <Text style={{ marginHorizontal: 10, color: black }}>
