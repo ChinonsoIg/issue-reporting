@@ -8,7 +8,7 @@ This app was built personally to demonstrate my understanding of React-Native, R
 Some screenshots of the screens are below:
 | SignUp screen  | Signin screen |
 | ------------- | ------------- |
-| ![](/src/image/screens/signup.png)  | ![](/src/image/screens/signin.png)  |
+| ![](image\screens\signUp.png)  | ![](/image/screens/signIn.png)  |
 
 
-![Homescreen](/src/image/screens/homescreen.png).
+![Homescreen](image\screens\homescreen.png).
