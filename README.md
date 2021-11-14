@@ -6,4 +6,9 @@ This app was built to assist factory workers report issues/problems encountered 
 This app was built personally to demonstrate my understanding of React-Native, Redux state management and Firestore.
 
 Some screenshots of the screens are below:
-![Homescreen](/src/screens/homescreen.png).
+| SignUp screen  | Signin screen |
+| ------------- | ------------- |
+| ![](/image/screens/signup.png)  | ![](/image/screens/signin.png)  |
+| Content Cell up  | Content Cell in  |
+
+<!-- ![Homescreen](/image/screens/homescreen.png). -->

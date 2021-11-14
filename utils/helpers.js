@@ -17,12 +17,16 @@ export const convertToUppercase = (word) => {
     return null
   }
   const string = word.split(" ");
-  
+    
   const combinedString = string.map(str => {
+    if (str == 'and') {
+      return `${str} `
+    }
     return `${str.charAt(0).toUpperCase()}${str.slice(1)} `
-  })
+  });
 
-  return combinedString;
+  // Use join('') to remove the commas
+  return combinedString.join('');
 }
 
 export const extractInitials = (word) => {
@@ -33,7 +37,7 @@ export const extractInitials = (word) => {
   
   const combinedString = string.map(str => {
     return `${str.charAt(0).toUpperCase()}`
-  })
+  });
 
   return combinedString;
 }

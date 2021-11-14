@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet, Pressable } from "react-native";
+// import moment from "moment";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { white, purple, darkPurple, purple_40, purple_80, purple_95 } from "../utils/colours";
 import { convertToUppercase } from "../utils/helpers";
@@ -24,10 +25,12 @@ const NotificationsList = ({ isNewReport, issueUID, title, department, reportedB
               }
             </Text> 
             {isNewReport 
-              ? ` reported a new issue to be resolved by ${convertToUppercase(department)} department.` 
+              ? (
+                <Text> reported a new issue to be resolved by <Text style={styles.boldText}>{convertToUppercase(department)}</Text> department.</Text>
+              ) 
               : (isInProgress 
                   ? ` set issue as in progress.` 
-                  : ` resolved issue.`
+                  : ` resolved an issue.`
                 )
             }
           </Text>          
@@ -37,7 +40,7 @@ const NotificationsList = ({ isNewReport, issueUID, title, department, reportedB
         </View>
       </Pressable>
       <View style={{flex: 1, alignItems: 'center', paddingTop: 8}}>
-        <View style={{width: '75%', borderBottomWidth: 1, borderBottomColor: purple_80,}}></View>
+        <View style={{width: '80%', borderBottomWidth: 3, borderBottomColor: white}}></View>
       </View>
     </View>
   );
@@ -45,7 +48,6 @@ const NotificationsList = ({ isNewReport, issueUID, title, department, reportedB
 
 const styles = StyleSheet.create({
   item: {
-    backgroundColor: white,
     paddingVertical: 8,
     paddingHorizontal: 5,
   },

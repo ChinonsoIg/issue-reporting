@@ -3,11 +3,12 @@ import { Text, View, StyleSheet, SectionList } from "react-native";
 import { SearchBar } from "react-native-elements";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+// For redux
+import { useSelector } from "react-redux";
+
 import IssuesList from "./IssuesList";
 import { bgSecondary, darkPurple, purple_40, purple_80, white } from "../utils/colours";
 
-// For redux
-import { useSelector } from "react-redux";
 
 
 const ItemHeader = ({ title }) => (

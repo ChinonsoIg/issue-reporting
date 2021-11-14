@@ -318,17 +318,13 @@ const Task = (props) => {
               <Text>Reported by: {task.reportedBy}</Text>
               <Text style={{fontStyle: 'italic'}}>Date: {task.createdAt}</Text>
             </View>
-            {/* <View style={{flexDirection: 'row', justifyContent: 'flex-start', marginVertical: 10}}>
-              <Text> */}
-                {
-                  (task.isNotStarted || task.isInProgress) && (
-                    <View style={{flexDirection: 'row', justifyContent: 'flex-start', marginVertical: 10}}>
-                    <Text>To be resolved by: {convertToUppercase(task.department)} department.</Text>
-                    </View>
-                  )
-                }
-              {/* </Text>
-            </View> */}
+              {
+                (task.isNotStarted || task.isInProgress) && (
+                  <View style={{flexDirection: 'row', justifyContent: 'flex-start', marginVertical: 10}}>
+                  <Text>To be resolved by: {convertToUppercase(task.department)} department.</Text>
+                  </View>
+                )
+              }
             <View style={{flexDirection: 'row', justifyContent: 'flex-start', marginVertical: 10}}>
               <View>
                 {

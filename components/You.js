@@ -41,13 +41,14 @@ const You = (props) => {
   const dispatch = useDispatch()
   
   const user = useSelector(currentUser);
-  console.log('user: ',user)
 
   const { name, department, photoURL } = user;
 
   const [modalVisible, setModalVisible] = useState(false)
 
-  const [selectedImage, setSelectedImage] = useState(null)
+  const [selectedImage, setSelectedImage] = useState(null);
+
+  const avatarInitials = extractInitials(name);
   
   
   let openImagePickerAsync = async () => {
@@ -70,7 +71,7 @@ const You = (props) => {
   const uploadProfilePicture = async() => {
     // console.log('in modal');
     if (selectedImage == null) {
-      return null;
+      return;
     } else {
       const response = await fetch(selectedImage);
       console.log(response)
@@ -158,8 +159,7 @@ const You = (props) => {
       // ...
     });
   }
-  
-  const avatarInitials = extractInitials(name);
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -200,19 +200,34 @@ const You = (props) => {
 
         <View style={{justifyContent: 'center', alignItems: 'center', marginVertical: 5}}>
           <View style={{borderColor: purple, borderRadius: 4}}>
-            <Avatar
-              rounded
-              size="xlarge"
-              title={avatarInitials}
-              source={{ 
-                uri: photoURL
-              }}
-              activeOpacity={0.7}
-              titleStyle={{color: darkPurple}}
-              containerStyle={{
-                backgroundColor: "silver",
-              }}
-            />           
+            {
+              !photoURL
+                ? (
+                  <Avatar
+                    rounded
+                    size="xlarge"
+                    title={avatarInitials}
+                    activeOpacity={0.7}
+                    titleStyle={{color: darkPurple}}
+                    containerStyle={{
+                      backgroundColor: "silver",
+                    }}
+                  />
+                ) : (
+                  <Avatar
+                    rounded
+                    size="xlarge"
+                    source={{ 
+                      uri: photoURL
+                    }}
+                    activeOpacity={0.7}
+                    titleStyle={{color: darkPurple}}
+                    containerStyle={{
+                      backgroundColor: "silver",
+                    }}
+                  />
+                )
+            }         
             <Ionicons
               name={
                 Platform.OS === 'ios'

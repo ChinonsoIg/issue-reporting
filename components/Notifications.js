@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, FlatList, RefreshControl } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import NotificationsList from "./NotificationsList";
-import { bgSecondary } from "../utils/colours";
+import { bgSecondary, white } from "../utils/colours";
 import Loading from "./Loading";
 
 // For redux

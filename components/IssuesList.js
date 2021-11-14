@@ -4,6 +4,8 @@ import { View, Text, StyleSheet, Pressable } from "react-native";
 import { Entypo } from "react-native-vector-icons";
 import { MaterialCommunityIcons } from "react-native-vector-icons";
 import * as Notifications from 'expo-notifications';
+// import moment from "moment";
+
 import { white, purple, darkPurple, purple_70, purple_40 } from "../utils/colours";
 import { convertToUppercase } from "../utils/helpers";
 

@@ -48,7 +48,8 @@ const IssuesStackNavigator = () => {
 const NotificationsStackNavigator = () => {
   return (
     <Stack.Navigator screenOptions={screenOptionStyle}>
-      <Stack.Screen name="Notifications" component={Notifications} options={{headerTitleAlign: "center"}} />      
+      <Stack.Screen name="Notifications" component={Notifications} options={{headerTitleAlign: "center"}} />
+      <Stack.Screen name="Task" component={Task} options={{headerTitleAlign: "center"}} />
     </Stack.Navigator>
   );
 }
